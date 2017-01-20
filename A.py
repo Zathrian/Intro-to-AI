@@ -22,18 +22,31 @@ def generate_world(rows, columns):
 			g.add_node(new_node)
 			#print("{}, {}, {}".format(int(i), int(j), str(white)))
 
-			if ((i - abs(prev_i)) == 0) & ((j - abs(prev_j)) == 1):
-				new_edge = header.Edge(prev_node, new_node)
-				g.add_edge(new_edge)
+			#if (abs(i - prev_i) == 0) & (abs(j - prev_j) == 1):
+			#	new_edge = header.Edge(prev_node, new_node)
+			#	g.add_edge(new_edge)
 
-			if ((i - abs(prev_i)) == 1) & ((j - abs(prev_j)) == 0):
-				new_edge = header.Edge(prev_node, new_node)
-				g.add_edge(new_edge)
+			#if (abs(i - prev_i) == 1) & (abs(j - prev_j) == 0):
+			#	new_edge = header.Edge(prev_node, new_node)
+			#	g.add_edge(new_edge)
 
 			#save prev for adjaceny generation
-			prev_i = i
-			prev_j = j
-			prev_node = new_node	
+			#prev_i = i
+			#prev_j = j
+			#prev_node = new_node	
+
+def establish_adjacencies():
+	for node in g.nodes:
+		curr_node = node
+		for node in g.nodes:
+			if (abs(curr_node.x - node.x) == 1) & (curr_node.y - node.y == 0):
+				new_edge = header.Edge(curr_node, node)
+				g.add_edge(new_edge)
+				print("{}, {}".format(int(node.x), int(node.y)))
+
+			if (abs(curr_node.y - node.y) == 1) & (curr_node.x - node.x == 0):
+				new_edge = header.Edge(curr_node, node)
+				g.add_edge(new_edge)
 
 
 def print_world():
@@ -49,5 +62,6 @@ def print_world():
 
 
 generate_world(rows, columns)
+establish_adjacencies()
 print_world()
 
