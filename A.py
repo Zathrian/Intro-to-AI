@@ -10,32 +10,29 @@ blue = "river"
 
 columns = 160
 rows = 120
+
 g = header.Graph()
 
 def generate_world(rows, columns):
-	prev_i = 100
-	prev_j = 100
-	# Create blank cells
+
+	# Create 160*120 = 19200 white cells
+
 	for i in range(0, rows):
 		for j in range(0, columns):
 			new_node = header.Node(i, j, white)
 			g.add_node(new_node)
-			#print("{}, {}, {}".format(int(i), int(j), str(white)))
-
-			#if (abs(i - prev_i) == 0) & (abs(j - prev_j) == 1):
-			#	new_edge = header.Edge(prev_node, new_node)
-			#	g.add_edge(new_edge)
-
-			#if (abs(i - prev_i) == 1) & (abs(j - prev_j) == 0):
-			#	new_edge = header.Edge(prev_node, new_node)
-			#	g.add_edge(new_edge)
-
-			#save prev for adjaceny generation
-			#prev_i = i
-			#prev_j = j
-			#prev_node = new_node	
+		
 
 def establish_adjacencies():
+
+	# For each cell check all cells and detect adjacency using coordinates
+	# So far this has proved to be an inefficient algo taking upwards of 3 minutes or more to compute
+	# all edges. It does however produce a number that is nearly correct. 
+
+	# There are 160*120 = 19200 cells. For each cell check every cell for adjacency. Therefore there
+	# will be 19200*19200 checks for adjancency = 368,640,000... thats a lot of checks. After running
+	# there are 76,240 edges which is very close to my hand calculation of 76,592 adjacencies
+
 	for node in g.nodes:
 		curr_node = node
 		for node in g.nodes:
@@ -50,12 +47,7 @@ def establish_adjacencies():
 
 
 def print_world():
-	#for node in g.nodes:
-	#	print("({}, {}, {})".format(int(node.x), int(node.y), str(node.cell_type)))
 	
-
-	#for edge in g.edges:
-	#	print("({}, {}) to ({}, {})".format(int(edge.from_node.x), int(edge.from_node.y), int(edge.to_node.x), int(edge.to_node.y))) 
 	
 	print("Size: {}".format(g.nodes.__len__()))
 	print("No. Edges: {}".format(g.edges.__len__()))
