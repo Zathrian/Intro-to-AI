@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Priority_Queue;
+using VCSKicksCollection;
 
 public class AStar  {
 	GridMap map = GridMap.Map;
-	StablePriorityQueue<Node> unvisited;
+	PriorityQueue<Node> unvisited;
 	HashSet<Node> visited;
 	Dictionary<Node,Node> parent;
 
@@ -14,10 +14,15 @@ public class AStar  {
 	Node target;
 	Node current;
 	Vector2 targetDist;
+	public virtual float weight {   //turning weight into a property helps us override this during weighted A*
+		get;set;
+		
+	}
 	public void Search()
 	{
 		Debug.Log("Started A*");
 		SetUp();
+		Debug.Log("Weight: " + weight);
 		Debug.Log("Finished setting up");
 		Traverse();
 		Debug.Log("Finished traversing");
@@ -39,8 +44,8 @@ public class AStar  {
 		 *	basic linked list. If not for that, linked lists would have been the fastest possible option.
 		 *	
 		 */
-			 
-		unvisited = new StablePriorityQueue<Node>(map.rows*map.columns);
+		//weight = 5f;
+		unvisited = new PriorityQueue<Node>();
 		visited = new HashSet<Node>();
 		parent = new Dictionary<Node, Node>();
 		//Find source and start nodes
@@ -56,8 +61,24 @@ public class AStar  {
 		//Add start node to unvisited
 		// Source has 0 gCost but we need to calculate it's hCost
 		setHCost(source);
-		unvisited.Enqueue(source, source.fCost);
-	}
+		unvisited.Enqueue(source);
+
+		for (int r = 0; r < map.rows; r++)
+		{
+			for (int c = 0; c < map.columns; c++)
+			{
+				if(map.graph[c,r] != source)
+				{
+					map.graph[c, r].gCost = Mathf.Infinity;
+					setHCost(map.graph[c, r]);
+				}
+			}
+		}
+
+
+
+
+			}
 
 	public void Traverse()
 	{
@@ -66,7 +87,8 @@ public class AStar  {
 		{
 			current = unvisited.Dequeue();
 			visited.Add(current);
-
+			GameObject tile = GameObject.Find("Tile_" + current.x + "_" + current.y);
+			tile.GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
 			// We found the target node and now we can return
 			if (current == target)
 			{
@@ -86,13 +108,17 @@ public class AStar  {
 					// We already visited this one, so skip
 					continue;
 				}
+
+
 				//If we are visiting a node for the very first time and it doesn't belong to the unvisited set
 				// either, we need to set the gCost of that node to infinity because we do not know it yet
 				// We already checked that it is not in visited so has to be the very first time we visit it
-				if (!unvisited.Contains(neighbor))
-				{
-					neighbor.gCost = Mathf.Infinity;
-				}
+				//if (!unvisited.Contains(neighbor))
+				//{
+			//		neighbor.gCost = Mathf.Infinity;
+			//	}
+
+
 				// Cost incurred to go from current to neighbor accounting for
 				// movement over rivers, ice, grass etc
 				// If we never visited neighbor then it is automatically added
@@ -120,7 +146,7 @@ public class AStar  {
 					// already
 					if (!unvisited.Contains(neighbor))
 					{
-						unvisited.Enqueue(neighbor, neighbor.fCost);
+						unvisited.Enqueue(neighbor);
 					}
 				}
 			}
@@ -160,6 +186,6 @@ public class AStar  {
 	}
 	public void setHCost(Node n)
 	{
-		n.hCost = Mathf.Abs( Vector2.Distance(new Vector2(n.x, n.y), targetDist) );
+		n.hCost =  1 * (Mathf.Abs( Vector2.Distance(new Vector2(n.x, n.y), targetDist) ));
 	}
 }

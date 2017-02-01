@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 
 public class InitializeWorld : MonoBehaviour {
+	public GameObject Lines;
 	public GameObject Grid;
 	public GameObject GrassTile;
 	public GameObject SnowTile;
@@ -34,19 +35,7 @@ public class InitializeWorld : MonoBehaviour {
 			ml.enabled = !ml.enabled;
 			Cursor.visible = !Cursor.visible;
 		}
-		if(map.currentPath!=null)
-		{
-			int currNode = 0;
-			while (currNode < map.currentPath.Count - 1)
-			{
-				Vector3 start = new Vector3(map.currentPath[currNode].x, 0, map.currentPath[currNode].y)
-								+ new Vector3(0, 0.2f, 0);
-				Vector3 end = new Vector3(map.currentPath[currNode + 1].x, 0, map.currentPath[currNode + 1].y)
-								+ new Vector3(0, 0.2f, 0);
-				Debug.DrawLine(start, end, Color.red);
-				currNode++;
-			}
-		}// end path draw
+		
 
 		Ray mousePos = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));//Camera.main.ScreenPointToRay();
 		RaycastHit hit = new RaycastHit();
@@ -55,8 +44,7 @@ public class InitializeWorld : MonoBehaviour {
 			Vector3 pos = hit.collider.transform.position;
 			spotlight.transform.position = hit.collider.transform.position + new Vector3(0, 5, 0);
 		}
-		
-		
+
 	}
 	public void Start()
 	{
@@ -316,15 +304,68 @@ public class InitializeWorld : MonoBehaviour {
 
 	public void CalculatePath()
 	{
-		AStar findPath = new AStar();
+		
+		
 		System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 		sw.Start();
-		findPath.Search();
+		PerformSearch(SearchAlgorithm.AStar);
 		sw.Stop();
 		Debug.Log("I FINALLY GENERATED SHORTEST PATH! Time: " + sw.ElapsedMilliseconds + "ms");
 
 
+		if (map.currentPath != null)
+		{
+			int currNode = 0;
+			while (currNode < map.currentPath.Count - 1)
+			{
+				Vector3 start = new Vector3(map.currentPath[currNode].x, 0, map.currentPath[currNode].y)
+								+ new Vector3(0, 0.2f, 0);
+				Vector3 end = new Vector3(map.currentPath[currNode + 1].x, 0, map.currentPath[currNode + 1].y)
+								+ new Vector3(0, 0.2f, 0);
+				DrawLine(start, end, Color.red);
+				currNode++;
+			}
+		}// end path draw
+
+	}
+	void DrawLine(Vector3 start, Vector3 end, Color color)
+	{
+		GameObject myLine = new GameObject();
+		myLine.transform.position = start;
+		myLine.AddComponent<LineRenderer>();
+		myLine.transform.SetParent(Lines.transform);
+		LineRenderer lr = myLine.GetComponent<LineRenderer>();
+		lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+		lr.SetColors(color, color);
+		lr.SetWidth(0.1f, 0.1f);
+		lr.SetPosition(0, start);
+		lr.SetPosition(1, end);
+		//GameObject.Destroy(myLine);
+	}
+	public void PerformSearch(SearchAlgorithm Algorithm)
+	{
+		switch(Algorithm)
+		{
+			case SearchAlgorithm.AStar:
+				AStar astar = new AStar();
+				astar.Search();
+				break;
+			case SearchAlgorithm.WeightedAStar:
+				WeightedAStar w_astar = new WeightedAStar(2.5f);
+				w_astar.Search();
+				break;
+			case SearchAlgorithm.UCS:
+
+				break;
+		}
 	}
 
+}
 
+
+public enum SearchAlgorithm
+{
+	AStar,
+	WeightedAStar,
+	UCS
 }

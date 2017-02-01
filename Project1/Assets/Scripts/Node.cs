@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Priority_Queue;
+using System;
 /// <summary>
 ///  Node class that represents each tile on our map
 /// </summary>
-public class Node : StablePriorityQueueNode
+public class Node : IComparable
+
 {
 	public int x;
 	public int y;
@@ -40,19 +41,19 @@ public class Node : StablePriorityQueueNode
 		{
 			// We are on some kind of a river-river or ice-ice combination so travel cost is 4times lesser than usual
 			// If we happen to go diagonally from discounted to discounted, then base movement is used instead of being discounted
-			if (this.x != n.x || this.y != n.y)
+			if (this.x != n.x && this.y != n.y)
 			{
 				return average(this.movementCost, n.movementCost);
 			}
 			return average(this.movementCost / 4.0f, n.movementCost / 4.0f);
 		}
 
-		if (this.x != n.x || this.y != n.y)
+		if (this.x != n.x && this.y != n.y)
 		{
 			// We are in a diagonal so additional cost of sqrt(2) must be paid to travel!
 			// Could have used sqrt function but I wanted to save a clock cycle when calculating this.
 			// It is a very minor optimization that has it's drawbacks but hopefully it counts for something
-			return average(this.movementCost, n.movementCost) * 1.41421f;
+			return average(this.movementCost, n.movementCost) * Mathf.Sqrt(2);// 1.41421f;
 		}
 
 		// We are neither traveling on discounted land or diagonally so regular average cost is paid!
@@ -159,11 +160,23 @@ public class Node : StablePriorityQueueNode
 		return (a + b) / 2.0f;
 	}
 
-	public override float InsertionIndex { get { return hCost; }  }
+	//public override float InsertionIndex { get { return hCost; }  }
 
 	public string toStringVector()
 	{
 		return "( " + x + ", " + y + " )";
 	}
 
+	public int CompareTo(object n)
+	{
+		Node compare = n as Node;
+		int result = fCost.CompareTo(compare.fCost);
+		if( result == 0)
+		{
+			result = hCost.CompareTo(compare.hCost);
+		}
+		return result;
+	}
+
+	
 }//end Node

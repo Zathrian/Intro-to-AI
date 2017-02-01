@@ -53,7 +53,7 @@ public class GridMap{
 		movementCosts.Add(TileTypes.River, 1);
 		movementCosts.Add(TileTypes.Snow, 2);
 		movementCosts.Add(TileTypes.Ice, 2);
-		movementCosts.Add(TileTypes.Lava, 100);
+		movementCosts.Add(TileTypes.Lava, 10000);
 
 	}
     public string TileToString(TileTypes tile)
@@ -149,19 +149,14 @@ public class GridMap{
 		 * first and then see what happens!
 		 * 
 		 */
-		int counter = 0;
 		for (int r = 0; r < map.rows; r++)
 		{
 			for (int c = 0; c < map.columns; c++)
 			{
 				graph[c, r].neighbors = GetNeighbors(graph[c, r]);
-				//counter++;
-				//if (counter == 100)
-					//goto ENDD;
 			}
 		}//end for
-	ENDD:
-		Debug.Log("Done Calculating neighbors");
+
 		// WE now have a graph where nodes are appropriatly connected to each other!
 	}// end Generate graph
 	//public for testing purposes, set private later!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
@@ -169,12 +164,12 @@ public class GridMap{
 	{
 		List<Node> neighbors = new List<Node>(); ;
 		//int index = 0;
-		if(n.type == TileTypes.Lava)
-		{
+		//if(n.type == TileTypes.Lava)
+		//{
 			// We return empty because lava doesn't have neighbors
-			return null;
-		}
-		else
+		//	return null;
+		//}
+	//	else
 		{
 			//neighbors = new Node[TileNeighbors[TileTypes.Grass]];
 			//got too lazy when switching so left the goto there.
@@ -193,9 +188,9 @@ public class GridMap{
 				try
 				{
 					Node neighbor = graph[n.x + x, n.y + y];
-					if (neighbor.type == TileTypes.Lava)
-					{ continue; }
-					else
+					//if (neighbor.type == TileTypes.Lava)
+					//{ continue; }
+					//else
 					{
 						neighbors.Add(neighbor);
 					}
