@@ -14,7 +14,13 @@ public class AStar  {
 	Node target;
 	Node current;
 	Vector2 targetDist;
-	public virtual float weight {   //turning weight into a property helps us override this during weighted A*
+
+    enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalShortcut, Euclidean, EuclideanNoSQRT };
+    HeuristicChoice heuristicChoice = HeuristicChoice.MaxDXDY;
+    int Weight = 1; 
+
+
+    public virtual float weight {   //turning weight into a property helps us override this during weighted A*
 		get;set;
 		
 	}
@@ -186,6 +192,34 @@ public class AStar  {
 	}
 	public void setHCost(Node n)
 	{
-		n.hCost =  1 * (Mathf.Abs( Vector2.Distance(new Vector2(n.x, n.y), targetDist) ));
+
+        switch (heuristicChoice)
+        {
+            case HeuristicChoice.MaxDXDY:
+                n.hCost = Weight * (Mathf.Max(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y)));
+                break;
+
+            case HeuristicChoice.DiagonalShortcut:
+                var hDiagonal = Mathf.Min(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y));
+                var hStraight = (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
+                n.hCost = (Weight * 2) * hDiagonal + Weight * (hStraight - 2 * hDiagonal);
+                break;
+
+            case HeuristicChoice.Euclidean:
+                n.hCost = Weight * Mathf.Sqrt(Mathf.Pow((n.y - targetDist.x), 2) + Mathf.Pow((n.y - targetDist.y), 2));
+                break;
+
+            case HeuristicChoice.EuclideanNoSQRT:
+                n.hCost = Mathf.Pow((n.y - targetDist.x), 2) + Mathf.Pow((n.y - targetDist.y), 2);
+                break;
+
+            case HeuristicChoice.Manhattan:
+            default:
+                n.hCost = Weight * (Mathf.Abs(Vector2.Distance(new Vector2(n.x, n.y), targetDist)));
+                //n.hCost = weight * (Mathf.Abs(n.x - target.x) + Mathf.Abs(n.y - target.y));
+                break;
+        }
+
+        //n.hCost =  1 * (Mathf.Abs( Vector2.Distance(new Vector2(n.x, n.y), targetDist) ));
 	}
 }
