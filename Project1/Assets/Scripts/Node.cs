@@ -5,7 +5,7 @@ using System;
 /// <summary>
 ///  Node class that represents each tile on our map
 /// </summary>
-public class Node : IComparable
+public class Node : IHeapItem<Node>
 
 {
 	public int x;
@@ -25,7 +25,7 @@ public class Node : IComparable
 							return gCost + hCost; //total cost of a tile
 						}
 					}
-	
+	int heapIndex;
 	public float GetCostToEnter(Node n)
 	{
 		/* New Way to calculate cost, assign a cost value to each tile type and then average them
@@ -167,6 +167,35 @@ public class Node : IComparable
 		return "( " + x + ", " + y + " )";
 	}
 
+	public int HeapIndex
+	{
+		get
+		{
+			return heapIndex;
+		}
+		set
+		{
+			heapIndex = value;
+		}
+	}
+
+	public int CompareTo(Node node)
+	{
+		int compare = fCost.CompareTo(node.fCost);
+		if (compare == 0)
+		{
+			compare = hCost.CompareTo(node.hCost);
+			//if(compare == 0)
+			//{
+			//	compare = gCost.CompareTo(node.gCost);
+			//}
+		}
+		return -compare;
+	}
+
+
+
+	/*
 	public int CompareTo(object n)
 	{
 		Node compare = n as Node;
@@ -174,9 +203,10 @@ public class Node : IComparable
 		if( result == 0)
 		{
 			result = hCost.CompareTo(compare.hCost);
+
 		}
 		return result;
 	}
+	*/
 
-	
 }//end Node

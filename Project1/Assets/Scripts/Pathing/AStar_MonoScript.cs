@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VCSKicksCollection;
+using Priority_Queue;
 
-public class AStar  {
+public class AStar_MonoScript : MonoBehaviour
+{
+	public GameObject Lines;
 	GridMap map = GridMap.Map;
 	Heap<Node> unvisited;
 	HashSet<Node> visited;
-	Dictionary<Node,Node> parent;
+	Dictionary<Node, Node> parent;
 	bool found = false;
 	bool setup;
 	//Get source and target Nodes from graph
@@ -16,38 +19,64 @@ public class AStar  {
 	Node current;
 	Vector2 targetDist;
 
-    enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalShortcut, Euclidean, EuclideanNoSQRT };
-    HeuristicChoice heuristicChoice = HeuristicChoice.Manhattan;
-    //float Weight = 1.0f; 
+	enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalShortcut, Euclidean, EuclideanNoSQRT };
+	HeuristicChoice heuristicChoice = HeuristicChoice.Manhattan;
+	//float Weight = 1.0f; 
 
 
-    public virtual float weight {   //turning weight into a property helps us override this during weighted A*
-		get;set;
-		
+	public virtual float weight
+	{   //turning weight into a property helps us override this during weighted A*
+		get; set;
+
 	}
-	public void Search()
+	private void Start()
 	{
 		Debug.Log("Started A*");
 		SetUp();
 		setup = true;
 		Debug.Log("Weight: " + weight);
 		Debug.Log("Finished setting up. Starting Co-routine");
-		Traverse();
-		Debug.Log("Finished traversing");
+		//Traverse();
+		//Debug.Log("Got pas");
 	}
-	/*
+
 	private void Update()
 	{
 		if(setup)
 		{
-			if(!found)
-			{
-				Debug.Log("got into update, calling traverse");
+				//Debug.Log("got into update, calling traverse");
 				StartCoroutine("Traverse");
-			}
+		}
+		if (found)
+		{
+			StopCoroutine("Traverse");
+				int currNode = 0;
+				while (currNode < map.currentPath.Count - 1)
+				{
+					Vector3 start = new Vector3(map.currentPath[currNode].x, 0, map.currentPath[currNode].y)
+									+ new Vector3(0, 0.2f, 0);
+					Vector3 end = new Vector3(map.currentPath[currNode + 1].x, 0, map.currentPath[currNode + 1].y)
+									+ new Vector3(0, 0.2f, 0);
+					DrawLine(start, end, Color.white);
+					currNode++;
+				}
+			this.enabled = false;
 		}
 	}
-	*/
+	void DrawLine(Vector3 start, Vector3 end, Color color)
+	{
+		GameObject myLine = new GameObject();
+		myLine.transform.position = start;
+		myLine.AddComponent<LineRenderer>();
+		myLine.transform.SetParent(Lines.transform);
+		LineRenderer lr = myLine.GetComponent<LineRenderer>();
+		lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+		lr.SetColors(color, color);
+		lr.SetWidth(0.6f, 0.6f);
+		lr.SetPosition(0, start);
+		lr.SetPosition(1, end);
+		//GameObject.Destroy(myLine);
+	}
 	// Add nodes to queue, set distances to infinity etc
 	// Basic initialization
 	public void SetUp()
@@ -65,7 +94,7 @@ public class AStar  {
 		 *	
 		 */
 		//weight = 5f;
-		unvisited = new Heap<Node>(map.rows*map.columns);
+		unvisited = new Heap<Node>(map.columns*map.rows);
 		visited = new HashSet<Node>();
 		parent = new Dictionary<Node, Node>();
 		//Find source and start nodes
@@ -87,7 +116,7 @@ public class AStar  {
 		{
 			for (int c = 0; c < map.columns; c++)
 			{
-				if(map.graph[c,r] != source)
+				if (map.graph[c, r] != source)
 				{
 					map.graph[c, r].gCost = Mathf.Infinity;
 					setHCost(map.graph[c, r]);
@@ -98,11 +127,10 @@ public class AStar  {
 
 
 
-			}
+	}
 
-	public void Traverse()
+	IEnumerator Traverse()
 	{
-		Debug.LogError("Hello");
 		//loop through while we still have nodes in unvisited
 		while (unvisited.Count > 0)
 		{
@@ -110,14 +138,14 @@ public class AStar  {
 			visited.Add(current);
 			GameObject tile = GameObject.Find("Tile_" + current.x + "_" + current.y);
 			tile.GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
+			yield return null;
 			//yield return null;
 			// We found the target node and now we can return
 			if (current == target)
 			{
 				GeneratePath();
-				Debug.Log("I actually came here in A*");
+				Debug.LogError("I actually came here in A*");
 				found = true;
-				return;
 			}
 
 			// traverse neighbors and calculate costs
@@ -138,8 +166,8 @@ public class AStar  {
 				// We already checked that it is not in visited so has to be the very first time we visit it
 				//if (!unvisited.Contains(neighbor))
 				//{
-			//		neighbor.gCost = Mathf.Infinity;
-			//	}
+				//		neighbor.gCost = Mathf.Infinity;
+				//	}
 
 
 				// Cost incurred to go from current to neighbor accounting for
@@ -156,7 +184,7 @@ public class AStar  {
 					neighbor.gCost = moveCost;
 					setHCost(neighbor);
 					//Set/update parent now
-					if(!parent.ContainsKey(neighbor))
+					if (!parent.ContainsKey(neighbor))
 					{
 						parent.Add(neighbor, current);
 					}
@@ -185,14 +213,14 @@ public class AStar  {
 		map.currentPath = new List<Node>();
 		Node n = target;
 		map.currentPath.Add(n);
-		while(n != source)
+		while (n != source)
 		{
 			map.currentPath.Add(parent[n]);
-			n = parent[n]; 
+			n = parent[n];
 		}
 
 		//Debug
-		foreach(Node node in map.currentPath)
+		foreach (Node node in map.currentPath)
 		{
 			Debug.Log("Node: " + node.toStringVector());
 		}
@@ -214,33 +242,40 @@ public class AStar  {
 	public void setHCost(Node n)
 	{
 		float Weight = 1.0f;
-        switch (heuristicChoice)
-        {
-            case HeuristicChoice.MaxDXDY:
-                n.hCost = Weight * (Mathf.Max(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y)));
-                break;
+		switch (heuristicChoice)
+		{
+			case HeuristicChoice.MaxDXDY:
+				n.hCost = Weight * (Mathf.Max(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y)));
+				break;
 
-            case HeuristicChoice.DiagonalShortcut:
-                var hDiagonal = Mathf.Min(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y));
-                var hStraight = (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
-                n.hCost = (Weight * 2) * hDiagonal + Weight * (hStraight - 2 * hDiagonal);
-                break;
+			case HeuristicChoice.DiagonalShortcut:
+				var hDiagonal = Mathf.Min(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y));
+				var hStraight = (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
+				n.hCost = (Weight * 2) * hDiagonal + Weight * (hStraight - 2 * hDiagonal);
+				break;
 
-            case HeuristicChoice.Euclidean:
+			case HeuristicChoice.Euclidean:
 				n.hCost = Weight * Mathf.Sqrt(((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y)));
 				break;
 
-            case HeuristicChoice.EuclideanNoSQRT:
+			case HeuristicChoice.EuclideanNoSQRT:
 				n.hCost = Weight * ((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y));
 				break;
 
-            case HeuristicChoice.Manhattan:
-            default:
-                //n.hCost = Weight * (Mathf.Abs(Vector2.Distance(new Vector2(n.x, n.y), targetDist)));
-                n.hCost = Weight * (Mathf.Abs(n.x - target.x) + Mathf.Abs(n.y - target.y));
-                break;
-        }
+			case HeuristicChoice.Manhattan:
+			default:
+				//n.hCost = Weight * (Mathf.Abs(Vector2.Distance(new Vector2(n.x, n.y), targetDist)));
+				n.hCost = 0; //0.25f * Weight * (Mathf.Abs(n.x - target.x) + Mathf.Abs(n.y - target.y));
+				//float dstX = Mathf.Abs(n.x - targetDist.x);
+				//float dstY = Mathf.Abs(n.y - targetDist.y);
 
-        //n.hCost =  1 * (Mathf.Abs( Vector2.Distance(new Vector2(n.x, n.y), targetDist) ));
+				//if (dstX > dstY)
+				//	n.hCost = 1.4f * dstY + 1.0f * (dstX - dstY);
+				//else
+				//	n.hCost = 1.4f * dstX + 1.0f * (dstY - dstX);
+				break;
+		}
+
+		//n.hCost =  1 * (Mathf.Abs( Vector2.Distance(new Vector2(n.x, n.y), targetDist) ));
 	}
 }

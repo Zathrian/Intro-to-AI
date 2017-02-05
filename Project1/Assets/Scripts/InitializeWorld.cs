@@ -48,7 +48,7 @@ public class InitializeWorld : MonoBehaviour {
 	}
 	public void Start()
 	{
-		Cursor.visible = false;
+		//Cursor.visible = false;
 	}
 	public void GenerateRandom()
     {
@@ -305,11 +305,12 @@ public class InitializeWorld : MonoBehaviour {
 		
 		System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 		sw.Start();
-		PerformSearch(SearchAlgorithm.AStar);
+		//PerformSearch(SearchAlgorithm.AStar);
+		GetComponentInParent<AStar_MonoScript>().enabled = true;
 		sw.Stop();
 		Debug.Log("I FINALLY GENERATED SHORTEST PATH! Time: " + sw.ElapsedMilliseconds + "ms");
 
-
+/*
 		if (map.currentPath != null)
 		{
 			int currNode = 0;
@@ -323,7 +324,7 @@ public class InitializeWorld : MonoBehaviour {
 				currNode++;
 			}
 		}// end path draw
-
+*/
 	}
 	void DrawLine(Vector3 start, Vector3 end, Color color)
 	{

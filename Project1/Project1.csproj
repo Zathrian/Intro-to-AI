@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\AStar.cs" />
+    <Compile Include="Assets\Scripts\Camera\CameraDrag.cs" />
     <Compile Include="Assets\Scripts\GenerateMap.cs" />
     <Compile Include="Assets\Scripts\GetObjInfo.cs" />
     <Compile Include="Assets\Scripts\GridMap.cs" />
@@ -93,6 +94,8 @@
     <Compile Include="Assets\Scripts\MouseClick.cs" />
     <Compile Include="Assets\Scripts\Node.cs" />
     <Compile Include="Assets\Scripts\Pathfinding.cs" />
+    <Compile Include="Assets\Scripts\Pathing\AStar_MonoScript.cs" />
+    <Compile Include="Assets\Scripts\Pathing\Heap.cs" />
     <Compile Include="Assets\Scripts\PriorityQueue\FastPriorityQueue.cs" />
     <Compile Include="Assets\Scripts\PriorityQueue\FastPriorityQueueNode.cs" />
     <Compile Include="Assets\Scripts\PriorityQueue\GenericPriorityQueue.cs" />
