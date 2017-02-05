@@ -17,7 +17,7 @@ public class AStar  {
 
     enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalShortcut, Euclidean, EuclideanNoSQRT };
     HeuristicChoice heuristicChoice = HeuristicChoice.MaxDXDY;
-    int Weight = 1; 
+    float Weight = 1.0f; 
 
 
     public virtual float weight {   //turning weight into a property helps us override this during weighted A*

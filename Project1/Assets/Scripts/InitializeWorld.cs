@@ -111,10 +111,10 @@ public class InitializeWorld : MonoBehaviour {
 
 		// Load the start and goal co-ordinates
 		string[] coord = buffer[0].Split(' ');
-		//Vector3 start = new Vector3(int.Parse(coord[0]), 0, int.Parse(coord[1]));
-		Debug.Log("Printing start vector: " + coord[0] + " " + coord[1]);
+		Vector2 start = new Vector2(int.Parse(coord[0]), int.Parse(coord[1]));
+		//target location
 		coord = buffer[1].Split(' ');
-		//Vector3 goal = new Vector3(int.Parse(coord[0]), 0, int.Parse(coord[1]));
+		Vector2 goal = new Vector2(int.Parse(coord[0]), int.Parse(coord[1]));
 		Debug.Log("Printing end vector: " + coord[0] + " " + coord[1]);
 		//Load the 8 snow zones
 		map.snowZones = new Vector2[map.numSnowzones];
@@ -124,13 +124,8 @@ public class InitializeWorld : MonoBehaviour {
 			coord = buffer[i + 2].Split(' ');
 			//map.snowZones[i] = new Vector2(int.Parse(coord[0]), int.Parse(coord[1]));
 		}
-
-		int counter = 0;
 		int rowIdx = 0;
 		// Time to load the actual grid data
-		Debug.LogError("Buffer Length: " + buffer.Length);
-
-		Debug.LogError("Buffer 10 Length: " + buffer[10].Length);
 		for (int i = 10; i < map.rows+10; i++)
 		{
 			char[] columnInfo = new char[map.columns];
@@ -139,8 +134,7 @@ public class InitializeWorld : MonoBehaviour {
 			// We start from row 0 (meaning y as 0) and increment x as we go
 			for (int colIdx = 0; colIdx < columnInfo.Length; colIdx++)
 			{
-				if(colIdx == 0)
-				Debug.LogError("col Length: " + columnInfo.Length);
+				
 				try
 				{
 					map.gridData[colIdx, rowIdx] = map.StringToTile(columnInfo[colIdx].ToString());
@@ -157,7 +151,10 @@ public class InitializeWorld : MonoBehaviour {
 		Debug.Log("Came to the end");
 		// We loaded all the data, time to Instantiate the grid on the world map
 		InitializeGrid();
-
+		map.start = GameObject.Find("Tile_" + start.x + "_" + start.y);
+		map.goal = GameObject.Find("Tile_" + goal.x + "_" + goal.y);
+		GameObject.Find("Start").transform.position = map.start.transform.position;
+		GameObject.Find("Goal").transform.position = map.goal.transform.position;
 	}
 
     public void SaveMap()
@@ -296,8 +293,8 @@ public class InitializeWorld : MonoBehaviour {
 			goto Goal;
 		}
 		//Move tower and wizard to the necessary position
-		GameObject.Find("Start").transform.position = map.start.transform.position; //new Vector3(map.start.transform.position.x, 0, map.start.transform.position.y);
-		GameObject.Find("Goal").transform.position = map.goal.transform.position; ;
+		GameObject.Find("Start").transform.position = map.start.transform.position;
+		GameObject.Find("Goal").transform.position = map.goal.transform.position;
 
 
 	}
@@ -322,7 +319,7 @@ public class InitializeWorld : MonoBehaviour {
 								+ new Vector3(0, 0.2f, 0);
 				Vector3 end = new Vector3(map.currentPath[currNode + 1].x, 0, map.currentPath[currNode + 1].y)
 								+ new Vector3(0, 0.2f, 0);
-				DrawLine(start, end, Color.red);
+				DrawLine(start, end, Color.white);
 				currNode++;
 			}
 		}// end path draw
@@ -337,7 +334,7 @@ public class InitializeWorld : MonoBehaviour {
 		LineRenderer lr = myLine.GetComponent<LineRenderer>();
 		lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
 		lr.SetColors(color, color);
-		lr.SetWidth(0.1f, 0.1f);
+		lr.SetWidth(0.6f, 0.6f);
 		lr.SetPosition(0, start);
 		lr.SetPosition(1, end);
 		//GameObject.Destroy(myLine);
