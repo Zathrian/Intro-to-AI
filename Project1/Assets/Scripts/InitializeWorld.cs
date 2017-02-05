@@ -91,8 +91,6 @@ public class InitializeWorld : MonoBehaviour {
 		map.numRivers = this.numRivers;
 		map.Init();
 
-
-
 		var path = EditorUtility.OpenFilePanel("Choose map file", "", "dat");
 		/*
 	   * Load the map data from a dat file and populate the necessary fields of the GridMap class
@@ -150,9 +148,11 @@ public class InitializeWorld : MonoBehaviour {
 
 		Debug.Log("Came to the end");
 		// We loaded all the data, time to Instantiate the grid on the world map
+		map.GenerateGraph();
 		InitializeGrid();
 		map.start = GameObject.Find("Tile_" + start.x + "_" + start.y);
 		map.goal = GameObject.Find("Tile_" + goal.x + "_" + goal.y);
+		Debug.LogError(map.start.transform.position); Debug.LogError(map.goal.transform.position);
 		GameObject.Find("Start").transform.position = map.start.transform.position;
 		GameObject.Find("Goal").transform.position = map.goal.transform.position;
 	}
