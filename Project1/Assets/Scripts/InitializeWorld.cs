@@ -282,7 +282,7 @@ public class InitializeWorld : MonoBehaviour {
 		int Startx = Random.Range(0, map.columns);
 		int Starty = Random.Range(0, map.rows);
 		map.start = GameObject.Find("Tile_" + Startx + "_" + Starty);
-		if(map.start.tag == "LavaTile" || ((Startx < 20 || Startx >= map.columns - 20) && (Starty > 20 || Starty >= map.rows - 20)) )
+        if (map.start.tag == "LavaTile" || !(((Startx < 20 || Startx >= map.columns - 20) && (Starty > 20 || Starty >= map.rows - 20)))) 
 		{
 			goto Start;
 		}
@@ -290,7 +290,7 @@ public class InitializeWorld : MonoBehaviour {
 		int Goalx = Random.Range(0, map.columns);
 		int Goaly = Random.Range(0, map.rows);
 		map.goal  = GameObject.Find("Tile_" + Goalx + "_" + Goaly);
-		if(map.goal.tag == "LavaTile" || ((Goalx < 20 || Goalx >= map.columns - 20) && (Goaly > 20 || Goaly >= map.rows - 20)))
+        if (map.goal.tag == "LavaTile" || !(((Goalx < 20 || Goalx >= map.columns - 20) && (Goaly > 20 || Goaly >= map.rows - 20)))) 
 		{
 			goto Goal;
 		}
