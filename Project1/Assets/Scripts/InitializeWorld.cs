@@ -276,6 +276,22 @@ public class InitializeWorld : MonoBehaviour {
 
 	public void RandomizeGoal()
 	{
+        AStar_MonoScript script = GetComponentInParent<AStar_MonoScript>();
+
+
+        if (script != null && script.visited != null)
+        {
+            // Restore tile color after new goal start generation
+            if (script.visited.Count != 0)
+            {
+                foreach (Node n in script.visited)
+                {
+                    GameObject tile = GameObject.Find("Tile_" + n.x + "_" + n.y);
+                    tile.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
+                }
+            }
+        }
+
 
 		//Get random coordinates for start and goal
 	Start:

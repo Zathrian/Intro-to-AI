@@ -9,7 +9,7 @@ public class AStar_MonoScript : MonoBehaviour
 	public GameObject Lines;
 	GridMap map = GridMap.Map;
 	Heap<Node> unvisited;
-	HashSet<Node> visited;
+	public HashSet<Node> visited;
 	Dictionary<Node, Node> parent;
 	bool found = false;
 	bool setup;
