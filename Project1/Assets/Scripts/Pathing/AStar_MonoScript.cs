@@ -18,23 +18,25 @@ public class AStar_MonoScript : MonoBehaviour
 	Node target;
 	Node current;
 	Vector2 targetDist;
+	System.Diagnostics.Stopwatch sw;
+	public enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalShortcut, Euclidean, EuclideanNoSQRT, Chebyshev};
+	//HeuristicChoice heuristicChoice = HeuristicChoice.Manhattan;
+	//virtual float Weight = 1.0f; 
+	public virtual HeuristicChoice heuristicChoice
+	{
+		get { return HeuristicChoice.Manhattan; }
+	}
 
-	enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalShortcut, Euclidean, EuclideanNoSQRT };
-	HeuristicChoice heuristicChoice = HeuristicChoice.Manhattan;
-	//float Weight = 1.0f; 
-
-
-	public virtual float weight
+	public virtual float Weight
 	{   //turning weight into a property helps us override this during weighted A*
-		get; set;
-
+		get { return 1.0f; }  
 	}
 	private void Start()
 	{
 		Debug.Log("Started A*");
+		sw = new System.Diagnostics.Stopwatch();
 		SetUp();
 		setup = true;
-		Debug.Log("Weight: " + weight);
 		Debug.Log("Finished setting up. Starting Co-routine");
 		//Traverse();
 		//Debug.Log("Got pas");
@@ -94,6 +96,7 @@ public class AStar_MonoScript : MonoBehaviour
 		 *	
 		 */
 		//weight = 5f;
+		sw.Start();
 		unvisited = new Heap<Node>(map.columns*map.rows);
 		visited = new HashSet<Node>();
 		parent = new Dictionary<Node, Node>();
@@ -110,6 +113,7 @@ public class AStar_MonoScript : MonoBehaviour
 		//Add start node to unvisited
 		// Source has 0 gCost but we need to calculate it's hCost
 		setHCost(source);
+		//unvisited.Add(source);
 		unvisited.Add(source);
 
 		for (int r = 0; r < map.rows; r++)
@@ -137,14 +141,16 @@ public class AStar_MonoScript : MonoBehaviour
 			current = unvisited.RemoveFirst();
 			visited.Add(current);
 			GameObject tile = GameObject.Find("Tile_" + current.x + "_" + current.y);
-			tile.GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
+			tile.GetComponentInChildren<MeshRenderer>().material.color = Color.grey;
 			yield return null;
-			//yield return null;
 			// We found the target node and now we can return
 			if (current == target)
 			{
 				GeneratePath();
-				Debug.LogError("I actually came here in A*");
+				// We are using a unity co-routine so we don't explicitly return. as soon as found == true, the co-routine
+				// stops in the next frame
+				sw.Stop();
+				Debug.Log("Finished Search; Time taken: " + sw.ElapsedMilliseconds + " ms" + ". FCost to target: " + target.fCost);
 				found = true;
 			}
 
@@ -218,12 +224,6 @@ public class AStar_MonoScript : MonoBehaviour
 			map.currentPath.Add(parent[n]);
 			n = parent[n];
 		}
-
-		//Debug
-		foreach (Node node in map.currentPath)
-		{
-			Debug.Log("Node: " + node.toStringVector());
-		}
 	}
 
 
@@ -239,9 +239,8 @@ public class AStar_MonoScript : MonoBehaviour
 	{
 		return n.fCost;
 	}
-	public void setHCost(Node n)
+	public virtual void setHCost(Node n)
 	{
-		float Weight = 1.0f;
 		switch (heuristicChoice)
 		{
 			case HeuristicChoice.MaxDXDY:
@@ -261,18 +260,22 @@ public class AStar_MonoScript : MonoBehaviour
 			case HeuristicChoice.EuclideanNoSQRT:
 				n.hCost = Weight * ((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y));
 				break;
-
+			case HeuristicChoice.Chebyshev:
+				n.hCost = Mathf.Max((n.x - targetDist.x), (n.y - targetDist.y));
+				break;
 			case HeuristicChoice.Manhattan:
 			default:
 				//n.hCost = Weight * (Mathf.Abs(Vector2.Distance(new Vector2(n.x, n.y), targetDist)));
-				n.hCost = 0; //0.25f * Weight * (Mathf.Abs(n.x - target.x) + Mathf.Abs(n.y - target.y));
-				//float dstX = Mathf.Abs(n.x - targetDist.x);
-				//float dstY = Mathf.Abs(n.y - targetDist.y);
+				n.hCost = Weight * (Mathf.Abs(n.x - target.x) + Mathf.Abs(n.y - target.y));
+				/*
+				float dstX = Mathf.Abs(n.x - targetDist.x);
+				float dstY = Mathf.Abs(n.y - targetDist.y);
 
-				//if (dstX > dstY)
-				//	n.hCost = 1.4f * dstY + 1.0f * (dstX - dstY);
-				//else
-				//	n.hCost = 1.4f * dstX + 1.0f * (dstY - dstX);
+				if (dstX > dstY)
+					n.hCost = Weight * 0.25f*(1.4f * dstY + 1.0f * (dstX - dstY));
+				else
+					n.hCost = Weight * 0.25f * (1.4f * dstX + 1.0f * (dstY - dstX));
+					*/
 				break;
 		}
 

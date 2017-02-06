@@ -185,10 +185,10 @@ public class Node : IHeapItem<Node>
 		if (compare == 0)
 		{
 			compare = hCost.CompareTo(node.hCost);
-			//if(compare == 0)
-			//{
-			//	compare = gCost.CompareTo(node.gCost);
-			//}
+			if(compare == 0)
+			{
+				compare = gCost.CompareTo(node.gCost);
+			} 
 		}
 		return -compare;
 	}

@@ -152,7 +152,6 @@ public class InitializeWorld : MonoBehaviour {
 		InitializeGrid();
 		map.start = GameObject.Find("Tile_" + start.x + "_" + start.y);
 		map.goal = GameObject.Find("Tile_" + goal.x + "_" + goal.y);
-		Debug.LogError(map.start.transform.position); Debug.LogError(map.goal.transform.position);
 		GameObject.Find("Start").transform.position = map.start.transform.position;
 		GameObject.Find("Goal").transform.position = map.goal.transform.position;
 	}
@@ -280,7 +279,7 @@ public class InitializeWorld : MonoBehaviour {
 		int Startx = Random.Range(0, map.columns);
 		int Starty = Random.Range(0, map.rows);
 		map.start = GameObject.Find("Tile_" + Startx + "_" + Starty);
-		if(map.start.tag == "LavaTile")
+		if(map.start.tag == "LavaTile" || ((Startx < 20 || Startx >= map.columns - 20) && (Starty > 20 || Starty >= map.rows - 20)) )
 		{
 			goto Start;
 		}
@@ -288,27 +287,48 @@ public class InitializeWorld : MonoBehaviour {
 		int Goalx = Random.Range(0, map.columns);
 		int Goaly = Random.Range(0, map.rows);
 		map.goal  = GameObject.Find("Tile_" + Goalx + "_" + Goaly);
-		if(map.goal.tag == "LavaTile")
+		if(map.goal.tag == "LavaTile" || ((Goalx < 20 || Goalx >= map.columns - 20) && (Goaly > 20 || Goaly >= map.rows - 20)))
 		{
 			goto Goal;
 		}
+
+		if (Mathf.Abs(Vector2.Distance(new Vector2(Startx, Starty), new Vector2(Goalx, Goaly))) >= 100)
+			{
+				//Move tower and wizard to the necessary position
+				GameObject.Find("Start").transform.position = map.start.transform.position;
+				GameObject.Find("Goal").transform.position = map.goal.transform.position;
+			}
+		else
+			goto Goal;
+
+
+
+
+
+
 		//Move tower and wizard to the necessary position
-		GameObject.Find("Start").transform.position = map.start.transform.position;
-		GameObject.Find("Goal").transform.position = map.goal.transform.position;
+		//GameObject.Find("Start").transform.position = map.start.transform.position;
+		//GameObject.Find("Goal").transform.position = map.goal.transform.position;
 
 
 	}
 
-	public void CalculatePath()
+	public void CalculatePath(string algorithm)
 	{
+		switch(algorithm)
+		{
+			case "astar":
+				GetComponentInParent<AStar_MonoScript>().enabled = true;
+				break;
+			case "wa":
+				GetComponentInParent<WeightedAStar>().enabled = true;
+				break;
+			case "ucs":
+				GetComponentInParent<UCS>().enabled = true;
+				break;
+		}
 		
 		
-		System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-		sw.Start();
-		//PerformSearch(SearchAlgorithm.AStar);
-		GetComponentInParent<AStar_MonoScript>().enabled = true;
-		sw.Stop();
-		Debug.Log("I FINALLY GENERATED SHORTEST PATH! Time: " + sw.ElapsedMilliseconds + "ms");
 
 /*
 		if (map.currentPath != null)
@@ -342,6 +362,7 @@ public class InitializeWorld : MonoBehaviour {
 	}
 	public void PerformSearch(SearchAlgorithm Algorithm)
 	{
+		/*
 		switch(Algorithm)
 		{
 			case SearchAlgorithm.AStar:
@@ -356,7 +377,9 @@ public class InitializeWorld : MonoBehaviour {
 
 				break;
 		}
+		*/
 	}
+	
 
 }
 
