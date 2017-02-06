@@ -33,6 +33,8 @@ public class AStar_MonoScript : MonoBehaviour
 	}
 	private void Start()
 	{
+        found = false;
+        setup = false;
 		Debug.Log("Started A*");
 		sw = new System.Diagnostics.Stopwatch();
 		SetUp();
@@ -41,8 +43,11 @@ public class AStar_MonoScript : MonoBehaviour
 		//Traverse();
 		//Debug.Log("Got pas");
 	}
-
-	private void Update()
+    private void OnEnable()
+    {
+        Start();
+    }
+    private void Update()
 	{
 		if(setup)
 		{

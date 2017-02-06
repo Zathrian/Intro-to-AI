@@ -284,11 +284,16 @@ public class InitializeWorld : MonoBehaviour {
             // Restore tile color after new goal start generation
             if (script.visited.Count != 0)
             {
+                foreach(Transform children in script.Lines.transform)
+                {
+                    GameObject.Destroy(children.gameObject);
+                }
                 foreach (Node n in script.visited)
                 {
                     GameObject tile = GameObject.Find("Tile_" + n.x + "_" + n.y);
                     tile.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
                 }
+                script.visited = null;
             }
         }
 
