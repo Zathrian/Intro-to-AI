@@ -24,7 +24,7 @@ public class AStar_MonoScript : MonoBehaviour
 	//virtual float Weight = 1.0f; 
 	public virtual HeuristicChoice heuristicChoice
 	{
-		get { return HeuristicChoice.Manhattan; }
+		get { return HeuristicChoice.Euclidean; }  
 	}
 
 	public virtual float Weight
@@ -150,7 +150,7 @@ public class AStar_MonoScript : MonoBehaviour
 				// We are using a unity co-routine so we don't explicitly return. as soon as found == true, the co-routine
 				// stops in the next frame
 				sw.Stop();
-				Debug.Log("Finished Search; Time taken: " + sw.ElapsedMilliseconds + " ms" + ". FCost to target: " + target.fCost);
+				Debug.Log("Finished Search; Time taken: " + sw.ElapsedMilliseconds + " ms" + ". FCost to target: " + target.fCost + " Node Expansion: " + visited.Count);
 				found = true;
 			}
 

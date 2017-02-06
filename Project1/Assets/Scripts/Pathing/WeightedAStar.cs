@@ -19,7 +19,7 @@ public class WeightedAStar : AStar_MonoScript {
 	{
 		get
 		{
-			return HeuristicChoice.Manhattan;
+			return HeuristicChoice.Euclidean;
 		}
 	}
 }
