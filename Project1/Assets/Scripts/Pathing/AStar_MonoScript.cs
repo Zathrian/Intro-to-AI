@@ -20,8 +20,6 @@ public class AStar_MonoScript : MonoBehaviour
 	Vector2 targetDist;
 	System.Diagnostics.Stopwatch sw;
 	public enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalShortcut, Euclidean, EuclideanNoSQRT, Chebyshev};
-	//HeuristicChoice heuristicChoice = HeuristicChoice.Manhattan;
-	//virtual float Weight = 1.0f; 
 	public virtual HeuristicChoice heuristicChoice
 	{
 		get { return HeuristicChoice.DiagonalShortcut; }  
@@ -185,16 +183,6 @@ public class AStar_MonoScript : MonoBehaviour
 					neighbor.gCost = moveCost;
 					setHCost(neighbor);
 					//Set/update parent now
-					/*
-					if (!parent.ContainsKey(neighbor))
-					{
-						parent.Add(neighbor, current);
-					}
-					else
-					{
-						parent[neighbor] = current;
-					}
-					*/
 					neighbor.parent = current;
 					//Now we add neighbor to unvisited list if it wasn't there
 					// already
@@ -213,16 +201,6 @@ public class AStar_MonoScript : MonoBehaviour
 
 	public void GeneratePath()
 	{
-		/*
-		map.currentPath = new List<Node>();
-		Node n = target;
-		map.currentPath.Add(n);
-		while (n != source)
-		{
-			map.currentPath.Add(parent[n]);
-			n = parent[n];
-		}
-		*/
 		map.currentPath = new List<Node>();
 		Node n = target;
 		//map.currentPath.Add(n);
@@ -285,7 +263,5 @@ public class AStar_MonoScript : MonoBehaviour
 					*/
 				break;
 		}
-
-		//n.hCost =  1 * (Mathf.Abs( Vector2.Distance(new Vector2(n.x, n.y), targetDist) ));
 	}
 }

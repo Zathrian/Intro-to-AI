@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class InitializeWorld : MonoBehaviour {
+public class InitializeWorld : MonoBehaviour
+{
 	public GameObject Lines;
 	public GameObject Grid;
 	public GameObject GrassTile;
@@ -28,18 +29,18 @@ public class InitializeWorld : MonoBehaviour {
 
 	private void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.Escape))
+		if (Input.GetKeyDown(KeyCode.Escape))
 		{
 			Debug.Log("Toggle MouseLook");
 			MouseLook ml = Camera.main.GetComponent<MouseLook>();
 			ml.enabled = !ml.enabled;
 			Cursor.visible = !Cursor.visible;
 		}
-		
+
 
 		Ray mousePos = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));//Camera.main.ScreenPointToRay();
 		RaycastHit hit = new RaycastHit();
-		if(Physics.Raycast(mousePos, out hit))
+		if (Physics.Raycast(mousePos, out hit))
 		{
 			Vector3 pos = hit.collider.transform.position;
 			spotlight.transform.position = hit.collider.transform.position + new Vector3(0, 5, 0);
@@ -51,7 +52,7 @@ public class InitializeWorld : MonoBehaviour {
 		//Cursor.visible = false;
 	}
 	public void GenerateRandom()
-    {
+	{
 
 		//Initialize Singleton with the received data
 		map.GrassTile = this.GrassTile;
@@ -75,8 +76,8 @@ public class InitializeWorld : MonoBehaviour {
 		InitializeGrid();
 	}
 
-    public void LoadMap()
-    {
+	public void LoadMap()
+	{
 		//Initialize basic grid data
 		map.GrassTile = this.GrassTile;
 		map.SnowTile = this.SnowTile;
@@ -124,7 +125,7 @@ public class InitializeWorld : MonoBehaviour {
 		}
 		int rowIdx = 0;
 		// Time to load the actual grid data
-		for (int i = 10; i < map.rows+10; i++)
+		for (int i = 10; i < map.rows + 10; i++)
 		{
 			char[] columnInfo = new char[map.columns];
 			System.IO.StringReader readString = new System.IO.StringReader(buffer[i]);
@@ -132,16 +133,15 @@ public class InitializeWorld : MonoBehaviour {
 			// We start from row 0 (meaning y as 0) and increment x as we go
 			for (int colIdx = 0; colIdx < columnInfo.Length; colIdx++)
 			{
-				
+
 				try
 				{
 					map.gridData[colIdx, rowIdx] = map.StringToTile(columnInfo[colIdx].ToString());
 				}
-				catch(System.IndexOutOfRangeException e)
+				catch (System.IndexOutOfRangeException e)
 				{
 					Debug.Log("Exception thrown at: " + colIdx + " " + rowIdx);
 				}
-				//
 			}
 			rowIdx++;
 		}
@@ -156,8 +156,8 @@ public class InitializeWorld : MonoBehaviour {
 		GameObject.Find("Goal").transform.position = map.goal.transform.position;
 	}
 
-    public void SaveMap()
-    {
+	public void SaveMap()
+	{
 
 		var path = EditorUtility.SaveFilePanel("Select file name and location", "", "test", "dat");
 		// Get all the grid map data and write it to a valid map file
@@ -195,20 +195,6 @@ public class InitializeWorld : MonoBehaviour {
 			buffer.Add(row);
 			row = "";
 		}
-
-		/*
-		foreach (TileTypes tile in map.gridData)
-		{
-			row += map.TileToString(tile);
-			column++;
-			if (column == map.columns)
-			{
-				column = 0;
-				buffer.Add(row);
-				row = "";
-			}
-		}
-		*/
 
 		// Now that our buffer is populated, we write it to the file;
 		// Before that we check if the file exists. If it doesn't then we create it
@@ -267,70 +253,59 @@ public class InitializeWorld : MonoBehaviour {
 
 	public void RandomizeGoal()
 	{
-        AStar_MonoScript script = GetComponentInParent<AStar_MonoScript>();
+		AStar_MonoScript script = GetComponentInParent<AStar_MonoScript>();
 
 
-        if (script != null && script.visited != null)
-        {
-            // Restore tile color after new goal start generation
-            if (script.visited.Count != 0)
-            {
-                foreach(Transform children in script.Lines.transform)
-                {
-                    GameObject.Destroy(children.gameObject);
-                }
-                foreach (Node n in script.visited)
-                {
-                    GameObject tile = GameObject.Find("Tile_" + n.x + "_" + n.y);
-                    tile.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
-                }
-                script.visited = null;
-            }
-        }
+		if (script != null && script.visited != null)
+		{
+			// Restore tile color after new goal start generation
+			if (script.visited.Count != 0)
+			{
+				foreach (Transform children in script.Lines.transform)
+				{
+					GameObject.Destroy(children.gameObject);
+				}
+				foreach (Node n in script.visited)
+				{
+					GameObject tile = GameObject.Find("Tile_" + n.x + "_" + n.y);
+					tile.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
+				}
+				script.visited = null;
+			}
+		}
 
 
-		//Get random coordinates for start and goal
+	//Get random coordinates for start and goal
 	Start:
 		int Startx = Random.Range(0, map.columns);
 		int Starty = Random.Range(0, map.rows);
 		map.start = GameObject.Find("Tile_" + Startx + "_" + Starty);
-        if (map.start.tag == "LavaTile" || !(((Startx < 20 || Startx >= map.columns - 20) && (Starty > 20 || Starty >= map.rows - 20)))) 
+		if (map.start.tag == "LavaTile" || !(((Startx < 20 || Startx >= map.columns - 20) && (Starty > 20 || Starty >= map.rows - 20))))
 		{
 			goto Start;
 		}
 	Goal:
 		int Goalx = Random.Range(0, map.columns);
 		int Goaly = Random.Range(0, map.rows);
-		map.goal  = GameObject.Find("Tile_" + Goalx + "_" + Goaly);
-        if (map.goal.tag == "LavaTile" || !(((Goalx < 20 || Goalx >= map.columns - 20) && (Goaly > 20 || Goaly >= map.rows - 20)))) 
+		map.goal = GameObject.Find("Tile_" + Goalx + "_" + Goaly);
+		if (map.goal.tag == "LavaTile" || !(((Goalx < 20 || Goalx >= map.columns - 20) && (Goaly > 20 || Goaly >= map.rows - 20))))
 		{
 			goto Goal;
 		}
 
 		if (Mathf.Abs(Vector2.Distance(new Vector2(Startx, Starty), new Vector2(Goalx, Goaly))) >= 100)
-			{
-				//Move tower and wizard to the necessary position
-				GameObject.Find("Start").transform.position = map.start.transform.position;
-				GameObject.Find("Goal").transform.position = map.goal.transform.position;
-			}
+		{
+			//Move tower and wizard to the necessary position
+			GameObject.Find("Start").transform.position = map.start.transform.position;
+			GameObject.Find("Goal").transform.position = map.goal.transform.position;
+		}
 		else
 			goto Goal;
-
-
-
-
-
-
-		//Move tower and wizard to the necessary position
-		//GameObject.Find("Start").transform.position = map.start.transform.position;
-		//GameObject.Find("Goal").transform.position = map.goal.transform.position;
-
-
 	}
 
 	public void CalculatePath(string algorithm)
 	{
-		switch(algorithm)
+		switch (algorithm)
 		{
 			case "astar":
 				GetComponentInParent<AStar_MonoScript>().enabled = true;
@@ -342,24 +317,6 @@ public class InitializeWorld : MonoBehaviour {
 				GetComponentInParent<UCS>().enabled = true;
 				break;
 		}
-		
-		
-
-/*
-		if (map.currentPath != null)
-		{
-			int currNode = 0;
-			while (currNode < map.currentPath.Count - 1)
-			{
-				Vector3 start = new Vector3(map.currentPath[currNode].x, 0, map.currentPath[currNode].y)
-								+ new Vector3(0, 0.2f, 0);
-				Vector3 end = new Vector3(map.currentPath[currNode + 1].x, 0, map.currentPath[currNode + 1].y)
-								+ new Vector3(0, 0.2f, 0);
-				DrawLine(start, end, Color.white);
-				currNode++;
-			}
-		}// end path draw
-*/
 	}
 	void DrawLine(Vector3 start, Vector3 end, Color color)
 	{
@@ -373,35 +330,14 @@ public class InitializeWorld : MonoBehaviour {
 		lr.SetWidth(0.6f, 0.6f);
 		lr.SetPosition(0, start);
 		lr.SetPosition(1, end);
-		//GameObject.Destroy(myLine);
 	}
-	public void PerformSearch(SearchAlgorithm Algorithm)
+
+
+
+	public enum SearchAlgorithm
 	{
-		/*
-		switch(Algorithm)
-		{
-			case SearchAlgorithm.AStar:
-				AStar astar = new AStar();
-				astar.Search();
-				break;
-			case SearchAlgorithm.WeightedAStar:
-				WeightedAStar w_astar = new WeightedAStar(2.5f);
-				w_astar.Search();
-				break;
-			case SearchAlgorithm.UCS:
-
-				break;
-		}
-		*/
+		AStar,
+		WeightedAStar,
+		UCS
 	}
-	
-
-}
-
-
-public enum SearchAlgorithm
-{
-	AStar,
-	WeightedAStar,
-	UCS
 }
