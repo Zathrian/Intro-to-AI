@@ -19,10 +19,16 @@ public class AStar_MonoScript : MonoBehaviour
 	Node current;
 	Vector2 targetDist;
 	System.Diagnostics.Stopwatch sw;
+<<<<<<< HEAD
 	public enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalShortcut, Euclidean, EuclideanNoSQRT, Chebyshev};
+=======
+	public enum HeuristicChoice { Manhattan, MaxDXDY, DiagonalChebyshev, DiagonalOctile, Euclidean, EuclideanNoSQRT, Chebyshev};
+	//HeuristicChoice heuristicChoice = HeuristicChoice.Manhattan;
+	//virtual float Weight = 1.0f; 
+>>>>>>> origin/master
 	public virtual HeuristicChoice heuristicChoice
 	{
-		get { return HeuristicChoice.DiagonalShortcut; }  
+		get { return HeuristicChoice.DiagonalOctile; }  
 	}
 
 	public virtual float Weight
@@ -232,12 +238,20 @@ public class AStar_MonoScript : MonoBehaviour
 				n.hCost = Weight * (Mathf.Max(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y)));
 				break;
 
-			case HeuristicChoice.DiagonalShortcut:
-				var hDiagonal = Mathf.Min(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y));
-				var hStraight = (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
-				n.hCost = (Weight * 2) * hDiagonal + Weight * (hStraight - 2 * hDiagonal);
+			case HeuristicChoice.DiagonalChebyshev:
+                //var hDiagonal = Mathf.Min(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y));
+                //var hStraight = (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
+                //n.hCost = (Weight * 2) * hDiagonal + Weight * (hStraight - 2 * hDiagonal);
+                float dx = Mathf.Abs(n.x - targetDist.x);
+                float dy = Mathf.Abs(n.y - targetDist.y);
+                n.hCost = (dx + dy) + -2 * Mathf.Min(dx, dy);
 				break;
 
+            case HeuristicChoice.DiagonalOctile:
+                float Dx = Mathf.Abs(n.x - targetDist.x);
+                float Dy = Mathf.Abs(n.y - targetDist.y);
+                n.hCost = 1*(Dx + Dy) + (Mathf.Sqrt(2)-2) * Mathf.Min(Dx, Dy);
+                break;
 			case HeuristicChoice.Euclidean:
 				n.hCost = Weight * Mathf.Sqrt(((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y)));
 				break;
@@ -245,13 +259,14 @@ public class AStar_MonoScript : MonoBehaviour
 			case HeuristicChoice.EuclideanNoSQRT:
 				n.hCost = Weight * ((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y));
 				break;
-			case HeuristicChoice.Chebyshev:
+			/*case HeuristicChoice.Chebyshev:
 				n.hCost = Mathf.Max((n.x - targetDist.x), (n.y - targetDist.y));
 				break;
+                */
 			case HeuristicChoice.Manhattan:
 			default:
 				//n.hCost = Weight * (Mathf.Abs(Vector2.Distance(new Vector2(n.x, n.y), targetDist)));
-				n.hCost = 0.25f*Weight * (Mathf.Abs(n.x - target.x) + Mathf.Abs(n.y - target.y));
+				n.hCost = 0.25f*Weight * (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
 				/*
 				float dstX = Mathf.Abs(n.x - targetDist.x);
 				float dstY = Mathf.Abs(n.y - targetDist.y);
