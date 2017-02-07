@@ -212,21 +212,12 @@ public class InitializeWorld : MonoBehaviour {
 
 		// Now that our buffer is populated, we write it to the file;
 		// Before that we check if the file exists. If it doesn't then we create it
-		//if (!System.IO.File.Exists(path))
-		//{
-		//	System.IO.File.Create(path);
-		//	
-		//}
-		//System.IO.TextWriter tw = new System.IO.StreamWriter(path);
-		//tw.Write(buffer.ToArray());
 		System.IO.File.WriteAllLines(path, buffer.ToArray());
 		Debug.Log("Finished writing");
 	}
 
 	void InitializeGrid()
 	{
-		//map = map;
-		// gridData = new TileTypes[columns, rows];
 		/* 
          * Follow these steps for terrain generation:
          *  -> Generate Snow

@@ -6,7 +6,8 @@ public class WeightedAStar : AStar_MonoScript {
 	//best for decetRiver.dat: 0.989f, 0.988971f
 	// for river2: 
 	// 0.988961f; seems to be the tipping point where the weight gives bad results
-	float weight = 0.908971f;
+	//0.908971f
+	float weight = 0.988971f;
 	public override float Weight
 	{
 		get
@@ -19,7 +20,7 @@ public class WeightedAStar : AStar_MonoScript {
 	{
 		get
 		{
-			return HeuristicChoice.Euclidean;
+			return HeuristicChoice.Manhattan;
 		}
 	}
 }

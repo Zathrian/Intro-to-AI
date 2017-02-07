@@ -14,7 +14,7 @@ public class Node : IHeapItem<Node>
 	public List<Node> neighbors;
 	public float movementCost;
 	public bool isDiscounted;
-
+	public Node parent;
 	// The 3 variables below will be used for A*
 	public float gCost; // distance from current node to goal node. Can use euclidean distance
 	public float hCost; // cost of our heuristic(something like cost from start to current tile)
@@ -58,95 +58,6 @@ public class Node : IHeapItem<Node>
 
 		// We are neither traveling on discounted land or diagonally so regular average cost is paid!
 		return average(this.movementCost, n.movementCost);
-
-		//Will delete code below if i'm sure that the one above works well!
-/* =======================================================================================================
-			if (		(this.type != n.type) && 
-				(this.type == TileTypes.River || this.type == TileTypes.Ice) ||
-				(n.type == TileTypes.River || n.type == TileTypes.Ice)
-			)
-		{
-			return average(this.movementCost, n.movementCost);
-		}
-
-
-		
-		if (this.type == n.type)
-		{
-			if (this.type == TileTypes.River)
-			{
-				cost = 0.25f;
-			}
-			else if (this.type == TileTypes.Ice)
-			{
-				cost = 0.5f;
-			}
-			else if (this.type == TileTypes.Snow)
-			{
-				cost = 2;
-			}
-			else if(this.type == TileTypes.Grass)
-			{
-				if(this.x != n.x || this.y != n.y)
-				{
-					cost = 1.41f;//diagonal
-				}
-				else
-					cost = 1;
-			}
-			else
-			{
-				cost = 9999999;
-			}
-		}
-		//Either of them are grass or river
-		else if ((this.type == TileTypes.Grass || this.type == TileTypes.River) &&
-					(n.type == TileTypes.Grass || n.type == TileTypes.River)
-				)
-		{
-			cost = 1;
-		}
-		//grass and ice
-		else if ((this.type == TileTypes.Grass || this.type == TileTypes.Ice) &&
-					(n.type == TileTypes.Grass || n.type == TileTypes.Ice)
-				)
-		{
-			cost = 1.5f;
-		}
-		// grass and snow
-		else if ((this.type == TileTypes.Grass || this.type == TileTypes.Snow) &&
-					(n.type == TileTypes.Grass || n.type == TileTypes.Snow)
-				)
-		{
-			cost = 1.5f;
-		}
-		//River and Ice
-		else if ((this.type == TileTypes.River || this.type == TileTypes.Ice) &&
-					(n.type == TileTypes.River || n.type == TileTypes.Ice)
-				)
-		{
-			cost = 0.375f;
-		}
-		//River and Snow
-		else if ((this.type == TileTypes.River || this.type == TileTypes.Snow) &&
-					(n.type == TileTypes.River || n.type == TileTypes.Snow)
-				)
-		{
-			cost = 1.5f;
-		}
-		//Snow and Ice
-		else if ((this.type == TileTypes.Grass || this.type == TileTypes.Ice) &&
-					(n.type == TileTypes.Grass || n.type == TileTypes.Ice)
-				)
-		{
-			cost = 2;
-		}
-		else cost = 999999;//cost for lava
-
-		//This seems to be highly unoptimized. Should find a faster way to do this!
-		//The method implemented before this one, the one on the top seems so much better
-		return cost;
-		*/
 	}//end cost to enter
 
 	/// <summary>

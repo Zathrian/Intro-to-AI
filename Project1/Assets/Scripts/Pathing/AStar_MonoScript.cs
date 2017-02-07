@@ -24,7 +24,7 @@ public class AStar_MonoScript : MonoBehaviour
 	//virtual float Weight = 1.0f; 
 	public virtual HeuristicChoice heuristicChoice
 	{
-		get { return HeuristicChoice.Euclidean; }  
+		get { return HeuristicChoice.DiagonalShortcut; }  
 	}
 
 	public virtual float Weight
@@ -171,21 +171,11 @@ public class AStar_MonoScript : MonoBehaviour
 					continue;
 				}
 
-
-				//If we are visiting a node for the very first time and it doesn't belong to the unvisited set
-				// either, we need to set the gCost of that node to infinity because we do not know it yet
-				// We already checked that it is not in visited so has to be the very first time we visit it
-				//if (!unvisited.Contains(neighbor))
-				//{
-				//		neighbor.gCost = Mathf.Infinity;
-				//	}
-
-
 				// Cost incurred to go from current to neighbor accounting for
 				// movement over rivers, ice, grass etc
 				// If we never visited neighbor then it is automatically added
 				float moveCost = current.gCost + current.GetCostToEnter(neighbor);
-				if (moveCost < neighbor.gCost || !visited.Contains(neighbor))
+				if (moveCost < neighbor.gCost || !unvisited.Contains(neighbor))
 				{
 					// This means we found a shorter path to the neighbor so 
 					// We use this now instead of the other one
@@ -195,6 +185,7 @@ public class AStar_MonoScript : MonoBehaviour
 					neighbor.gCost = moveCost;
 					setHCost(neighbor);
 					//Set/update parent now
+					/*
 					if (!parent.ContainsKey(neighbor))
 					{
 						parent.Add(neighbor, current);
@@ -203,7 +194,8 @@ public class AStar_MonoScript : MonoBehaviour
 					{
 						parent[neighbor] = current;
 					}
-
+					*/
+					neighbor.parent = current;
 					//Now we add neighbor to unvisited list if it wasn't there
 					// already
 					if (!unvisited.Contains(neighbor))
@@ -221,6 +213,7 @@ public class AStar_MonoScript : MonoBehaviour
 
 	public void GeneratePath()
 	{
+		/*
 		map.currentPath = new List<Node>();
 		Node n = target;
 		map.currentPath.Add(n);
@@ -228,6 +221,15 @@ public class AStar_MonoScript : MonoBehaviour
 		{
 			map.currentPath.Add(parent[n]);
 			n = parent[n];
+		}
+		*/
+		map.currentPath = new List<Node>();
+		Node n = target;
+		//map.currentPath.Add(n);
+		while(n!=source)
+		{
+			map.currentPath.Add(n);
+			n = n.parent;
 		}
 	}
 
@@ -271,7 +273,7 @@ public class AStar_MonoScript : MonoBehaviour
 			case HeuristicChoice.Manhattan:
 			default:
 				//n.hCost = Weight * (Mathf.Abs(Vector2.Distance(new Vector2(n.x, n.y), targetDist)));
-				n.hCost = Weight * (Mathf.Abs(n.x - target.x) + Mathf.Abs(n.y - target.y));
+				n.hCost = 0.25f*Weight * (Mathf.Abs(n.x - target.x) + Mathf.Abs(n.y - target.y));
 				/*
 				float dstX = Mathf.Abs(n.x - targetDist.x);
 				float dstY = Mathf.Abs(n.y - targetDist.y);
