@@ -13,20 +13,6 @@ public class GenerateMap  {
     // RIVERS is HIGHWAYS                                                      //
     // ICE    is HIGHWAY WITH SNOW                                             //
     #########################################################################*///
-																			   // Initialise the various variables of the grid
-																			   //   public GameObject GrassTile;
-																			   //   public GameObject SnowTile;
-																			   //  public GameObject RiverTile;
-																			   //public GameObject LavaTile;
-																			   //  public GameObject IceTile;
-																			   //   public int rows;    //y coordinate
-																			   //   public int columns; //x coordinate
-
-	// Variables for more precise control of grid features
-	//  public int numSnowzones;
-	//  public int snowZoneRangeX = 31;
-	//  public int snowZoneRangeY = 31;
-	//  public int numRivers = 4;
 
     //TileTypes[,] gridData;
     // Use this for initialization

@@ -127,7 +127,15 @@ public class GridMap{
 				{
 					graph[c, r].isDiscounted = true;
 				}
-				graph[c, r].movementCost = movementCosts[graph[c, r].type];
+				if(graph[c, r].type == TileTypes.Lava)
+				{
+					graph[c, r].isWalkable = false;
+				}
+				else
+				{
+					graph[c, r].movementCost = movementCosts[graph[c, r].type];
+				}
+				
 			}
 		}
 

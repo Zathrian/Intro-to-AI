@@ -14,6 +14,7 @@ public class Node : IHeapItem<Node>
 	public List<Node> neighbors;
 	public float movementCost;
 	public bool isDiscounted;
+	public bool isWalkable = true;
 	public Node parent;
 	// The 3 variables below will be used for A*
 	public float gCost; // distance from current node to goal node. Can use euclidean distance
@@ -104,20 +105,5 @@ public class Node : IHeapItem<Node>
 		return -compare;
 	}
 
-
-
-	/*
-	public int CompareTo(object n)
-	{
-		Node compare = n as Node;
-		int result = fCost.CompareTo(compare.fCost);
-		if( result == 0)
-		{
-			result = hCost.CompareTo(compare.hCost);
-
-		}
-		return result;
-	}
-	*/
 
 }//end Node

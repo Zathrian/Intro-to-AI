@@ -73,21 +73,6 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
-      <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Common">
-      <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>Library\ScriptAssemblies\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-UnityScript-firstpass">
-      <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
-    </Reference>
     <Reference Include="Assembly-UnityScript-firstpass">
       <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
     </Reference>
@@ -109,16 +94,6 @@
     <Compile Include="Assets\Scripts\Pathing\Heap.cs" />
     <Compile Include="Assets\Scripts\Pathing\UCS.cs" />
     <Compile Include="Assets\Scripts\Pathing\WeightedAStar.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\FastPriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\FastPriorityQueueNode.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\GenericPriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\GenericPriorityQueueNode.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\IFixedSizePriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\IPriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\PriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\SimplePriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\StablePriorityQueue.cs" />
-    <Compile Include="Assets\Scripts\PriorityQueue\StablePriorityQueueNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Standard Assets\Environment\Water\Water\Shaders\FXWaterPro.shader" />
