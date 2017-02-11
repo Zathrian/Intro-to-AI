@@ -10,18 +10,16 @@ public class AStar_MonoScript : MonoBehaviour
 	public HashSet<Node> visited;
 	//Dictionary<Node, Node> parent;
 	bool found = false;
-	bool setup;
+	public bool setup;
 	//Get source and target Nodes from graph
 	Node source;
 	Node target;
 	Node current;
-	Vector2 targetDist;
+	public Vector2 targetDist;
 	System.Diagnostics.Stopwatch sw;
-	public enum HeuristicChoice { Manhattan, MahattanOptimised,MaxDXDY, DiagonalChebyshev, DiagonalOctile, Euclidean, EuclideanNoSQRT};
-	public virtual HeuristicChoice heuristicChoice
-	{
-		get { return HeuristicChoice.Manhattan; }  
-	}
+	public enum HeuristicChoice { Manhattan, MahattanOptimised, MaxDXDY, DiagonalChebyshev, DiagonalOctile, Euclidean, EuclideanNoSQRT };
+
+    public HeuristicChoice heuristicChoice = 0;
 
 	public virtual float Weight
 	{   //turning weight into a property helps us override this during weighted A*
@@ -32,13 +30,17 @@ public class AStar_MonoScript : MonoBehaviour
 
 		Debug.Log("Started A*");
 		sw = new System.Diagnostics.Stopwatch();
-		SetUp();
-		setup = true;
-		Debug.Log("Finished setting up. Starting Co-routine");
-		Traverse();
-		//Traverse();
-		//Debug.Log("Got pas");
+        begin_Astar();
 	}
+
+    public virtual void begin_Astar()
+    {
+        SetUp();
+        setup = true;
+        Debug.Log("Finished setting up. Starting Co-routine");
+        Traverse();
+    }
+
     private void OnEnable()
     {
 		found = false;
@@ -134,7 +136,7 @@ public class AStar_MonoScript : MonoBehaviour
 		*/
 	}
 
-	 void Traverse()
+	 public void Traverse()
 	{
 		//loop through while we still have nodes in unvisited
 		while (unvisited.Count > 0)
@@ -163,7 +165,7 @@ public class AStar_MonoScript : MonoBehaviour
 			{
 				if (visited.Contains(neighbor) || neighbor.isWalkable == false)
 				{
-					// We already visited this one, so skip
+					// We already visited this one, so skip to next iteration
 					continue;
 				}
 
@@ -178,8 +180,8 @@ public class AStar_MonoScript : MonoBehaviour
 					// To make the new path we update the fCost of the neighbor
 					// With new values
 					neighbor.gCost = moveCost;
-					//setHCost(neighbor);
-					neighbor.hCost = GetDistance(neighbor);
+                    //setHCost(neighbor);
+                    setHCost(neighbor);
 					//neighbor.hCost = GetDistance(neighbor);
 					//Set/update parent now
 					neighbor.parent = current;
@@ -197,10 +199,7 @@ public class AStar_MonoScript : MonoBehaviour
 		}
 	}
 
-	float GetDistance(Node n)
-	{
-		return 0.25f * Weight * (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
-	}
+
 	public void GeneratePath()
 	{
 		map.currentPath = new List<Node>();

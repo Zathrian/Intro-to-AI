@@ -305,6 +305,9 @@ public class InitializeWorld : MonoBehaviour
 			case "ucs":
 				GetComponentInParent<UCS>().enabled = true;
 				break;
+            case "sa":
+                GetComponentInParent<Sequential_A_Star>().enabled = true;
+                break;
 		}
 	}
 	void DrawLine(Vector3 start, Vector3 end, Color color)

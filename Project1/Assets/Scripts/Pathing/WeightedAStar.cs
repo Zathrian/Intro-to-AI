@@ -16,11 +16,5 @@ public class WeightedAStar : AStar_MonoScript {
 		}
 	}
 
-	public override HeuristicChoice heuristicChoice
-	{
-		get
-		{
-			return HeuristicChoice.Manhattan;
-		}
-	}
+
 }
