@@ -61,11 +61,7 @@ public class Sequential_A_Star : AStar_MonoScript{
                     continue;
             }
         }
-
-        hCosts.Sort();
-
         n.hCost = hCosts.Max();
-        n.hCost = 0;
     }
 
 }
