@@ -5,18 +5,17 @@ using UnityEngine;
 public class AStar_MonoScript : MonoBehaviour
 {
 	public GameObject Lines;
-	GridMap map = GridMap.Map;
-	Heap<Node> unvisited;
+	public GridMap map = GridMap.Map;
+	public Heap<Node> unvisited;
 	public HashSet<Node> visited;
-	//Dictionary<Node, Node> parent;
-	bool found = false;
+	public bool found = false;
 	public bool setup;
 	//Get source and target Nodes from graph
-	Node source;
-	Node target;
-	Node current;
+	public Node source;
+	public Node target;
+	public Node current;
 	public Vector2 targetDist;
-	System.Diagnostics.Stopwatch sw;
+	public System.Diagnostics.Stopwatch sw;
 	public enum HeuristicChoice { Manhattan, MahattanOptimised, MaxDXDY, DiagonalChebyshev, DiagonalOctile, Euclidean, EuclideanNoSQRT };
 
     public HeuristicChoice heuristicChoice = 0;
@@ -86,7 +85,7 @@ public class AStar_MonoScript : MonoBehaviour
 	}
 	// Add nodes to queue, set distances to infinity etc
 	// Basic initialization
-	public void SetUp()
+	public virtual void SetUp()
 	{
 		/*		-> Creating a queue of size row* columns just in case we have to go through every node in the graph
 		 * This is highly unlikely though since we are using A*
@@ -100,12 +99,11 @@ public class AStar_MonoScript : MonoBehaviour
 		 *	basic linked list. If not for that, linked lists would have been the fastest possible option.
 		 *	
 		 */
-		//weight = 5f;
+
 		sw.Start();
 		unvisited = new Heap<Node>(map.columns*map.rows);
 		visited = new HashSet<Node>();
-		//parent = new Dictionary<Node, Node>();
-		//Find source and start nodes
+
 		source = map.graph[
 							(int)map.start.transform.position.x,
 							(int)map.start.transform.position.z
@@ -121,22 +119,10 @@ public class AStar_MonoScript : MonoBehaviour
 		setHCost(source);
 		source.gCost = 0;
 		unvisited.Add(source);
-		/*
-		for (int r = 0; r < map.rows; r++)
-		{
-			for (int c = 0; c < map.columns; c++)
-			{
-				if (map.graph[c, r] != source)
-				{
-					map.graph[c, r].gCost = Mathf.Infinity;
-					setHCost(map.graph[c, r]);
-				}
-			}
-		}
-		*/
+
 	}
 
-	 public void Traverse()
+	 public virtual void Traverse()
 	{
 		//loop through while we still have nodes in unvisited
 		while (unvisited.Count > 0)
