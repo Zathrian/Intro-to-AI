@@ -23,11 +23,12 @@ public class Sequential_A_Star : AStar_MonoScript{
             // **Note** That the first heuristic choice must be an admissible/consistent heuristic
             // Initialize a new search
             Search currentSearch = new Search(heuristicChoice.ToString());
-            searchList.Add(currentSearch);
 
             // Set up the search
             SetUpSearch(currentSearch);                 // Reinitialize Priority Queue for each search
             currentSearch.setup = true;
+
+            searchList.Add(currentSearch);              // Add the search to the list
             Debug.Log("Finished setting up. Starting Co-routine");
         }
 
@@ -65,9 +66,10 @@ public class Sequential_A_Star : AStar_MonoScript{
         Search currentSearch = new Search();
         int suspendedSearch; 
 
-        while (true)
+        
+        while (true) // While we want to perform round robin
         {
-        for(int i = 0; i < searchList.Count; i++)
+        for(int i = 0; i < searchList.Count; i++)   // For each heuristic we have
             {
                 currentSearch = searchList[i];
                 //loop through while we still have nodes in unvisited
@@ -113,7 +115,7 @@ public class Sequential_A_Star : AStar_MonoScript{
                             // With new values
                             neighbor.gCost = moveCost;
                             //setHCost(neighbor);
-                            setHCost(neighbor);
+                            GetHCost(neighbor);
                             //neighbor.hCost = GetDistance(neighbor);
                             //Set/update parent now
                             neighbor.parent = currentSearch.current;
