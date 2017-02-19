@@ -73,6 +73,7 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
+<<<<<<< HEAD
     <Reference Include="Mono.Cecil">
       <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
     </Reference>
@@ -82,6 +83,8 @@
     <Reference Include="UnityEditor.iOS.Extensions.Common">
       <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
+=======
+>>>>>>> 280db95700a0c5a543465322ab5f35c6e197eb4d
     <Reference Include="Assembly-UnityScript-firstpass">
       <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
     </Reference>
@@ -101,8 +104,12 @@
     <Compile Include="Assets\Scripts\Node.cs" />
     <Compile Include="Assets\Scripts\Pathing\AStar_MonoScript.cs" />
     <Compile Include="Assets\Scripts\Pathing\Heap.cs" />
+<<<<<<< HEAD
     <Compile Include="Assets\Scripts\Pathing\Search.cs" />
     <Compile Include="Assets\Scripts\Pathing\Sequential_A_Star.cs" />
+=======
+    <Compile Include="Assets\Scripts\Pathing\Sequential_AStar.cs" />
+>>>>>>> 280db95700a0c5a543465322ab5f35c6e197eb4d
     <Compile Include="Assets\Scripts\Pathing\UCS.cs" />
     <Compile Include="Assets\Scripts\Pathing\WeightedAStar.cs" />
   </ItemGroup>

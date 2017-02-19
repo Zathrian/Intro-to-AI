@@ -8,8 +8,8 @@ using UnityEngine;
 /// cost to 0 is all that we need to do
 /// </summary>
 public class UCS : AStar_MonoScript {
-	public override void setHCost(Node n)
+	public override float GetHCost(Node n)
 	{
-		n.hCost = 0;
+		return 0;
 	}
 }
