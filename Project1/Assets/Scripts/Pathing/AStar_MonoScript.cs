@@ -18,8 +18,11 @@ public class AStar_MonoScript : MonoBehaviour
 	public Vector2 targetDist;
 	System.Diagnostics.Stopwatch sw;
 	public enum HeuristicChoice { Manhattan, MahattanOptimised, MaxDXDY, DiagonalChebyshev, DiagonalOctile, Euclidean, EuclideanNoSQRT };
+    public HeuristicChoice heuristicChoice;
 
-    public HeuristicChoice heuristicChoice = 0;
+	public int NodeExpansion;
+	public float timeTaken;
+	public float fCost;
 
 	public virtual float Weight
 	{   //turning weight into a property helps us override this during weighted A*
@@ -28,48 +31,30 @@ public class AStar_MonoScript : MonoBehaviour
 	private void Start()
 	{
 
-		Debug.Log("Started A*");
 		sw = new System.Diagnostics.Stopwatch();
-        begin_Astar();
+		SetUp();
+		Traverse();
+
+		// Time to draw the path
+		int currNode = 0;
+		while (currNode < map.currentPath.Count - 1)
+		{
+			Vector3 start = new Vector3(map.currentPath[currNode].x, 0, map.currentPath[currNode].y)
+							+ new Vector3(0, 0.2f, 0);
+			Vector3 end = new Vector3(map.currentPath[currNode + 1].x, 0, map.currentPath[currNode + 1].y)
+							+ new Vector3(0, 0.2f, 0);
+			DrawLine(start, end, Color.white);
+			currNode++;
+		}
+		this.enabled = false;
 	}
-
-    public virtual void begin_Astar()
-    {
-        SetUp();
-        setup = true;
-        Debug.Log("Finished setting up. Starting Co-routine");
-        Traverse();
-    }
-
     private void OnEnable()
     {
 		found = false;
         setup = false;
         Start();
     }
-    private void Update()
-	{
-		if(setup)
-		{
-				//Debug.Log("got into update, calling traverse");
-				StartCoroutine("Traverse");
-		}
-		if (found)
-		{
-			StopCoroutine("Traverse");
-				int currNode = 0;
-				while (currNode < map.currentPath.Count - 1)
-				{
-					Vector3 start = new Vector3(map.currentPath[currNode].x, 0, map.currentPath[currNode].y)
-									+ new Vector3(0, 0.2f, 0);
-					Vector3 end = new Vector3(map.currentPath[currNode + 1].x, 0, map.currentPath[currNode + 1].y)
-									+ new Vector3(0, 0.2f, 0);
-					DrawLine(start, end, Color.white);
-					currNode++;
-				}
-			this.enabled = false;
-		}
-	}
+
 	void DrawLine(Vector3 start, Vector3 end, Color color)
 	{
 		GameObject myLine = new GameObject();
@@ -118,22 +103,10 @@ public class AStar_MonoScript : MonoBehaviour
 		//Add start node to unvisited
 		// Source has 0 gCost but we need to calculate it's hCost
 
-		setHCost(source);
+		source.hCost = GetHCost(source);
 		source.gCost = 0;
 		unvisited.Add(source);
-		/*
-		for (int r = 0; r < map.rows; r++)
-		{
-			for (int c = 0; c < map.columns; c++)
-			{
-				if (map.graph[c, r] != source)
-				{
-					map.graph[c, r].gCost = Mathf.Infinity;
-					setHCost(map.graph[c, r]);
-				}
-			}
-		}
-		*/
+
 	}
 
 	 public void Traverse()
@@ -143,8 +116,7 @@ public class AStar_MonoScript : MonoBehaviour
 		{
 			current = unvisited.RemoveFirst();
 			visited.Add(current);
-			//GameObject tile = GameObject.Find("Tile_" + current.x + "_" + current.y);
-			//tile.GetComponentInChildren<MeshRenderer>().material.color = Color.grey;
+
 			//yield return null;
 			// We found the target node and now we can return
 			if (current == target)
@@ -153,7 +125,9 @@ public class AStar_MonoScript : MonoBehaviour
 				// We are using a unity co-routine so we don't explicitly return. as soon as found == true, the co-routine
 				// stops in the next frame
 				sw.Stop();
-				Debug.Log("Finished Search; Time taken: " + sw.ElapsedMilliseconds + " ms" + ". FCost to target: " + target.fCost + " Node Expansion: " + visited.Count);
+				timeTaken = sw.ElapsedMilliseconds; NodeExpansion = visited.Count; fCost = target.fCost;
+				Debug.Log("Finished Search; Time taken: " + timeTaken + " ms" + ". FCost to target: " + target.fCost + " Node Expansion: " + visited.Count);
+				
 				found = true;
 			}
 
@@ -180,8 +154,8 @@ public class AStar_MonoScript : MonoBehaviour
 					// To make the new path we update the fCost of the neighbor
 					// With new values
 					neighbor.gCost = moveCost;
-                    //setHCost(neighbor);
-                    setHCost(neighbor);
+					//setHCost(neighbor);
+					neighbor.hCost = GetHCost(neighbor);
 					//neighbor.hCost = GetDistance(neighbor);
 					//Set/update parent now
 					neighbor.parent = current;
@@ -224,47 +198,42 @@ public class AStar_MonoScript : MonoBehaviour
 	{
 		return n.fCost;
 	}
-	public virtual void setHCost(Node n)
+	public virtual float GetHCost(Node n)
 	{
 		switch (heuristicChoice)
 		{
 			case HeuristicChoice.MahattanOptimised:
 				float dstX = Mathf.Abs(n.x - targetDist.x);
 				float dstY = Mathf.Abs(n.y - targetDist.y);
-
 				if (dstX > dstY)
-					n.hCost = 0.25f * Weight * (1.4f * dstY + 1.0f * (dstX - dstY));
+					return 0.25f * Weight * (1.4f * dstY + 1.0f * (dstX - dstY));
 				else
-					n.hCost = 0.25f * Weight * (1.4f * dstX + 1.0f * (dstY - dstX));
+					return 0.25f * Weight * (1.4f * dstX + 1.0f * (dstY - dstX));
 
-				break;
 			case HeuristicChoice.MaxDXDY:
-				n.hCost = Weight * (Mathf.Max(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y)));
-				break;
+				return Weight * (Mathf.Max(Mathf.Abs(n.x - targetDist.x), Mathf.Abs(n.y - targetDist.y)));
 
 			case HeuristicChoice.DiagonalChebyshev:
                 float dx = Mathf.Abs(n.x - targetDist.x);
                 float dy = Mathf.Abs(n.y - targetDist.y);
-                n.hCost = (dx + dy) + -2 * Mathf.Min(dx, dy);
-				break;
+				return (dx + dy) + -2 * Mathf.Min(dx, dy);
 
             case HeuristicChoice.DiagonalOctile:
                 float Dx = Mathf.Abs(n.x - targetDist.x);
                 float Dy = Mathf.Abs(n.y - targetDist.y);
-                n.hCost = 1*(Dx + Dy) + (Mathf.Sqrt(2)-2) * Mathf.Min(Dx, Dy);
-                break;
+				return 1 *(Dx + Dy) + (Mathf.Sqrt(2)-2) * Mathf.Min(Dx, Dy);
+
 			case HeuristicChoice.Euclidean:
-				n.hCost = Weight * Mathf.Sqrt(((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y)));
-				break;
+				return Weight * Mathf.Sqrt(((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y)));
 
 			case HeuristicChoice.EuclideanNoSQRT:
-				n.hCost = Weight * ((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y));
-				break;
+				return Weight * ((n.x - targetDist.x) * (n.x - targetDist.x) + (n.y - targetDist.y) * (n.y - targetDist.y));
+
 			case HeuristicChoice.Manhattan:
 			default:
 				//n.hCost = Weight * (Mathf.Abs(Vector2.Distance(new Vector2(n.x, n.y), targetDist)));
-				n.hCost = Weight * (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
-				break;
+				return Weight * (Mathf.Abs(n.x - targetDist.x) + Mathf.Abs(n.y - targetDist.y));
+
 
 		}
 	}

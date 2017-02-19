@@ -253,15 +253,14 @@ public class InitializeWorld : MonoBehaviour
 
 	public void RandomizeGoal()
 	{
-		//AStar_MonoScript script = GetComponentInParent<AStar_MonoScript>();
 		GameObject Lines = GameObject.Find("Lines");
 
 
-				foreach (Transform children in Lines.transform)
-				{
-					GameObject.Destroy(children.gameObject);
-				}
-	
+		foreach (Transform children in Lines.transform)
+		{
+			GameObject.Destroy(children.gameObject);
+		}
+
 
 
 	//Get random coordinates for start and goal
@@ -305,9 +304,9 @@ public class InitializeWorld : MonoBehaviour
 			case "ucs":
 				GetComponentInParent<UCS>().enabled = true;
 				break;
-            case "sa":
-                GetComponentInParent<Sequential_A_Star>().enabled = true;
-                break;
+			case "sa":
+				GetComponentInParent<Sequential_AStar>().enabled = true;
+				break;
 		}
 	}
 	void DrawLine(Vector3 start, Vector3 end, Color color)
@@ -324,12 +323,136 @@ public class InitializeWorld : MonoBehaviour
 		lr.SetPosition(1, end);
 	}
 
-
-
-	public enum SearchAlgorithm
+	public void GetExperimentalData()
 	{
-		AStar,
-		WeightedAStar,
-		UCS
+		// So, for a given map, we run all the necessary algorithms, collect all their data and maybe write them to a text file.
+		// Was thinking that writing to an excel file would be more convinient. For basics, I'll just print the averages to the console;
+		
+		
+		const int numberOfRuns = 10;
+		int numHeuristics = System.Enum.GetNames(typeof(AStar_MonoScript.HeuristicChoice)).Length;
+		const int numAlgorithms = 6;
+		ExperimentalData[,] dataArray = new ExperimentalData[numHeuristics,numAlgorithms];
+		for (int i = 0; i < numAlgorithms; i++)
+		{
+			for (int j = 0; j < numHeuristics; j++)
+			{
+				dataArray[j, i] = new ExperimentalData(0, 0, 0);
+			}
+		}
+		int heuristic = 0;
+		//A*
+		AStar_MonoScript astar = GetComponentInParent<AStar_MonoScript>();
+		
+		for (int i = 0; i < numberOfRuns; i++)
+		{
+		heuristic = 0;
+			foreach (AStar_MonoScript.HeuristicChoice choice in System.Enum.GetValues(typeof(AStar_MonoScript.HeuristicChoice)))
+			{
+				astar.heuristicChoice = choice;
+				RandomizeGoal();
+				astar.enabled = true;
+				dataArray[heuristic, 0] = ExperimentalData.addData(dataArray[heuristic, 0], new ExperimentalData(astar.NodeExpansion, astar.timeTaken, astar.fCost));
+				heuristic++;
+			}
+		}
+
+
+		//Weighted A*
+		WeightedAStar wa = GetComponentInParent<WeightedAStar>();
+		
+		for (int i = 0; i < numberOfRuns; i++)
+		{
+		heuristic = 0;
+			foreach (WeightedAStar.HeuristicChoice choice in System.Enum.GetValues(typeof(WeightedAStar.HeuristicChoice)))
+			{
+				wa.heuristicChoice = choice;
+				RandomizeGoal();
+				wa.enabled = true;
+				dataArray[heuristic, 1] = ExperimentalData.addData(dataArray[heuristic, 1], new ExperimentalData(wa.NodeExpansion, wa.timeTaken, wa.fCost));
+				heuristic++;
+			}
+		}
+
+		//UCS
+		UCS ucs = GetComponentInParent<UCS>();
+		for (int i = 0; i < numberOfRuns; i++)
+		{
+			RandomizeGoal();
+			ucs.enabled = true;
+			dataArray[0, 2] = ExperimentalData.addData(dataArray[0,2], new ExperimentalData(ucs.NodeExpansion, ucs.timeTaken, ucs.fCost));
+		}
+
+		//Sequential A*
+		// dataArray[3] for this
+
+		//Integrated A*
+		// dataArray[4] for this one
+
+		//Time to average the data
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < numHeuristics; j++)
+			{
+				dataArray[j, i] = ExperimentalData.average(dataArray[j,i], numberOfRuns);
+			}
+		}
+
+
+		Debug.LogError("Printing Average Experimental data for the Map for 10 randomized start/goals");
+		Debug.LogError("Astar: ");
+		heuristic = 0;
+		foreach (AStar_MonoScript.HeuristicChoice choice in System.Enum.GetValues(typeof(AStar_MonoScript.HeuristicChoice)))
+		{
+			Debug.LogError(choice.ToString() + ": Node Expansion: " + dataArray[heuristic, 0].NodeExpansion + " TimeTaken: " + dataArray[heuristic, 0].timeTaken + " FCost: " + dataArray[heuristic, 0].fcost);
+			heuristic++;
+		}
+		Debug.LogError("===========================================");
+
+		Debug.LogError("Weighted Astar: ");
+		heuristic = 0;
+		foreach (AStar_MonoScript.HeuristicChoice choice in System.Enum.GetValues(typeof(AStar_MonoScript.HeuristicChoice)))
+		{
+			Debug.LogError(choice.ToString() + ": Node Expansion: " + dataArray[heuristic, 1].NodeExpansion + " TimeTaken: " + dataArray[heuristic, 1].timeTaken + " FCost: " + dataArray[heuristic, 1].fcost);
+			heuristic++;
+		}
+		Debug.LogError("===========================================");
+
+		Debug.LogError("UCS: Node Expansion: " + dataArray[0, 2].NodeExpansion + " TimeTaken: " + dataArray[0, 2].timeTaken + " FCost: " + dataArray[0, 2].fcost);
+		Debug.LogError("===========================================");
+		//For now i'll just log the data to console;
+		//Debug.LogError("Printing Average Experimental data for the Map for 10 randomized start/goals");
+		//Debug.LogError("AStar: Node Expansion: " + dataArray[0].NodeExpansion + " TimeTaken: " + dataArray[0].timeTaken + " FCost: " + dataArray[0].fcost);
+		//Debug.LogError("Weighted A*: Node Expansion: " + dataArray[1].NodeExpansion + " TimeTaken: " + dataArray[1].timeTaken + " FCost: " + dataArray[1].fcost);
+		//Debug.LogError("UCS: Node Expansion: " + dataArray[2].NodeExpansion + " TimeTaken: " + dataArray[2].timeTaken + " FCost: " + dataArray[2].fcost);
+
+	}
+
+	class ExperimentalData
+	{
+		public int NodeExpansion;
+		public float timeTaken;
+		public float fcost;
+
+		public ExperimentalData(int NodeExpansion, float timeTaken, float fcost)
+		{
+			this.NodeExpansion = NodeExpansion;
+			this.timeTaken = timeTaken;
+			this.fcost = fcost;
+		}
+		public static ExperimentalData average(ExperimentalData data, float count)
+		{
+			int NodeExpansion = (int)(data.NodeExpansion / count);
+			float timeTaken = (data.timeTaken) / count;
+			float fcost = (data.fcost) / count;
+			return new ExperimentalData(NodeExpansion, timeTaken, fcost);
+		}
+		public static ExperimentalData addData(ExperimentalData data1, ExperimentalData data2)
+		{
+			int NodeExpansion = data1.NodeExpansion + data2.NodeExpansion;
+			float timeTaken = data1.timeTaken + data2.timeTaken;
+			float fcost = data1.fcost + data2.fcost;
+			return new ExperimentalData(NodeExpansion, timeTaken, fcost);
+		}
 	}
 }
