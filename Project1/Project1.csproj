@@ -95,8 +95,8 @@
     <Compile Include="Assets\Scripts\Node.cs" />
     <Compile Include="Assets\Scripts\Pathing\AStar_MonoScript.cs" />
     <Compile Include="Assets\Scripts\Pathing\Heap.cs" />
+    <Compile Include="Assets\Scripts\Pathing\IntegratedAStar.cs" />
     <Compile Include="Assets\Scripts\Pathing\Search.cs" />
-    <Compile Include="Assets\Scripts\Pathing\Sequential_AStar.cs" />
     <Compile Include="Assets\Scripts\Pathing\Sequential_A_Star.cs" />
     <Compile Include="Assets\Scripts\Pathing\UCS.cs" />
     <Compile Include="Assets\Scripts\Pathing\WeightedAStar.cs" />

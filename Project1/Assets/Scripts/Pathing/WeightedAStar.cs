@@ -7,7 +7,7 @@ public class WeightedAStar : AStar_MonoScript {
 	// for river2: 
 	// 0.988961f; seems to be the tipping point where the weight gives bad results
 	//0.908971f
-	float weight = 2.0f;//0.988971f;
+	float weight = 1.1f;//0.988971f;
 	public override float Weight
 	{
 		get

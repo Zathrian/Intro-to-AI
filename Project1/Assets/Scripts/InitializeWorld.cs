@@ -305,7 +305,10 @@ public class InitializeWorld : MonoBehaviour
 				GetComponentInParent<UCS>().enabled = true;
 				break;
 			case "sa":
-				GetComponentInParent<Sequential_AStar>().enabled = true;
+				GetComponentInParent<Sequential_A_Star>().enabled = true;
+				break;
+			case "ia":
+				GetComponentInParent<IntegratedAStar>().enabled = true;
 				break;
 		}
 	}
@@ -385,12 +388,24 @@ public class InitializeWorld : MonoBehaviour
 
 		//Sequential A*
 		// dataArray[3] for this
-
+		Sequential_A_Star sa = GetComponentInParent<Sequential_A_Star>();
+		for (int i = 0; i < numberOfRuns; i++)
+		{
+			RandomizeGoal();
+			sa.enabled = true;
+			dataArray[0, 3] = ExperimentalData.addData(dataArray[0, 3], new ExperimentalData(sa.NodeExpansion, sa.timeTaken, sa.fCost));
+		}
 		//Integrated A*
 		// dataArray[4] for this one
-
+		IntegratedAStar ia = GetComponentInParent<IntegratedAStar>();
+		for (int i = 0; i < numberOfRuns; i++)
+		{
+			RandomizeGoal();
+			ia.enabled = true;
+			dataArray[0, 4] = ExperimentalData.addData(dataArray[0, 4], new ExperimentalData(ia.NodeExpansion, ia.timeTaken, ia.fCost));
+		}
 		//Time to average the data
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			for (int j = 0; j < numHeuristics; j++)
 			{
@@ -419,6 +434,12 @@ public class InitializeWorld : MonoBehaviour
 		Debug.LogError("===========================================");
 
 		Debug.LogError("UCS: Node Expansion: " + dataArray[0, 2].NodeExpansion + " TimeTaken: " + dataArray[0, 2].timeTaken + " FCost: " + dataArray[0, 2].fcost);
+		Debug.LogError("===========================================");
+
+		Debug.LogError("Sequential A*: Node Expansion: " + dataArray[0, 3].NodeExpansion + " TimeTaken: " + dataArray[0, 3].timeTaken + " FCost: " + dataArray[0, 3].fcost);
+		Debug.LogError("===========================================");
+
+		Debug.LogError("Integrated A*: Node Expansion: " + dataArray[0, 4].NodeExpansion + " TimeTaken: " + dataArray[0, 4].timeTaken + " FCost: " + dataArray[0, 4].fcost);
 		Debug.LogError("===========================================");
 		//For now i'll just log the data to console;
 		//Debug.LogError("Printing Average Experimental data for the Map for 10 randomized start/goals");

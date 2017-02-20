@@ -54,7 +54,7 @@ public class AStar_MonoScript : MonoBehaviour
         Start();
     }
 
-	void DrawLine(Vector3 start, Vector3 end, Color color)
+	protected void DrawLine(Vector3 start, Vector3 end, Color color)
 	{
 		GameObject myLine = new GameObject();
 		myLine.transform.position = start;
@@ -125,8 +125,8 @@ public class AStar_MonoScript : MonoBehaviour
 				sw.Stop();
 				timeTaken = sw.ElapsedMilliseconds; NodeExpansion = visited.Count; fCost = target.fCost;
 				Debug.Log("Finished Search; Time taken: " + timeTaken + " ms" + ". FCost to target: " + target.fCost + " Node Expansion: " + visited.Count);
-				
 				found = true;
+				break;
 			}
 
 			// traverse neighbors and calculate costs
@@ -181,6 +181,7 @@ public class AStar_MonoScript : MonoBehaviour
 			map.currentPath.Add(n);
 			n = n.parent;
 		}
+		Debug.LogError("Finished GeneratePath()");
 	}
 
 

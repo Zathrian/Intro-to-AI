@@ -13,12 +13,16 @@ public class Search {
     public Node current;
     public Vector2 targetDist;
     public string searchName;
-
+	public AStar_MonoScript.HeuristicChoice choice;
     public Search() { }
 
-    public Search(string search)
+    public Search(string search, AStar_MonoScript.HeuristicChoice choice)
     {
         this.searchName = search;
-    }
+		this.choice = choice;
+		unvisited = new Heap<Node>(120 * 160);
+		visited = new HashSet<Node>();
+
+	}
 
 }
