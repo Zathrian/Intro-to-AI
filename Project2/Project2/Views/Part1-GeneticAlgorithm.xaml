@@ -1,0 +1,31 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project2.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Controls="using:Project2.Controls"
+    x:Class="Project2.Views.Part1_GeneticAlgorithm"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="7*"/>
+        </Grid.RowDefinitions>
+
+        <Controls:PageHeader Margin="0" VerticalAlignment="Top" Loaded="PageHeader_Loaded" x:Name="Header" />
+        <Grid Margin="0" Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="8*"/>
+            </Grid.ColumnDefinitions>
+            <ListView x:Name="listView" SelectionChanged="listView_SelectionChanged" BorderThickness="0,0,2,0" BorderBrush="#FF554D4D">
+                <ListViewItem Content="25 SAT"/>
+                <ListViewItem Content="50 SAT"/>
+                <ListViewItem Content="100 SAT"/>
+            </ListView>
+        </Grid>
+
+    </Grid>
+</Page>
