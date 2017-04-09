@@ -81,17 +81,17 @@ public class InitializeWorld : MonoBehaviour
 		 *	are the tiles.
 		 */
 
-		map.gridData[0, 0] = TileTypes.Highway;
-		map.gridData[1, 0] = TileTypes.Highway;
-		map.gridData[2, 0] = TileTypes.Hard;
+		map.gridData[1, 1] = TileTypes.Highway;
+		map.gridData[1, 2] = TileTypes.Highway;
+		map.gridData[1, 3] = TileTypes.Hard;
 
-		map.gridData[0, 1] = TileTypes.Normal;
-		map.gridData[1, 1] = TileTypes.Normal;
 		map.gridData[2, 1] = TileTypes.Normal;
+		map.gridData[2, 2] = TileTypes.Normal;
+		map.gridData[2, 3] = TileTypes.Normal;
 
-		map.gridData[0, 2] = TileTypes.Normal;
-		map.gridData[1, 2] = TileTypes.Blocked;
-		map.gridData[2, 2] = TileTypes.Highway;
+		map.gridData[3, 1] = TileTypes.Normal;
+		map.gridData[3, 2] = TileTypes.Blocked;
+		map.gridData[3, 3] = TileTypes.Highway;
 
 		map.GenerateGraph();
 		InitializeGrid();
@@ -185,9 +185,9 @@ public class InitializeWorld : MonoBehaviour
 
 		// Time to enter terrain data in form of strings
 		string row = "";
-		for (int r = 0; r < map.y_rows; r++)
+		for (int r = 1; r < map.y_rows; r++)
 		{
-			for (int c = 0; c < map.x_columns; c++)
+			for (int c = 1; c < map.x_columns; c++)
 			{
 				row += map.TileToString(map.gridData[c, r]);
 			}
@@ -211,9 +211,9 @@ public class InitializeWorld : MonoBehaviour
          *  -> Generate Grass
          */
 		//Column is X | Row is Y
-		for (int r = 0; r < map.y_rows; r++)
+		for (int r = 1; r < map.y_rows; r++)
 		{
-			for (int c = 0; c < map.x_columns; c++)
+			for (int c = 1; c < map.x_columns; c++)
 			{
 				if (map.gridData[c, r] == TileTypes.Hard)
 				{
@@ -259,7 +259,25 @@ public class InitializeWorld : MonoBehaviour
 		}
 	}
 
-
+	public void Move()
+	{
+		//Testing the 3 by 3 map with following data:
+		/*
+		 * Direction: Right Right Down Down
+		 * Sensor:	  N N H H
+		 */
+		List<MovePair> executedActions = new List<MovePair>();
+		executedActions.Add(new MovePair(Direction.Right, TileTypes.Normal));
+		executedActions.Add(new MovePair(Direction.Right, TileTypes.Normal));
+		executedActions.Add(new MovePair(Direction.Down, TileTypes.Highway));
+		executedActions.Add(new MovePair(Direction.Down, TileTypes.Highway));
+		//	read_value = sensor data;
+		foreach (MovePair action in executedActions)
+		{
+			GetComponent<MovementAndSensing>().ExecuteInstruction(action.direction, action.sensedTile);
+		}
+		
+	}
 
 	void DrawLine(Vector3 start, Vector3 end, Color color)
 	{
@@ -274,5 +292,15 @@ public class InitializeWorld : MonoBehaviour
 		lr.SetPosition(0, start);
 		lr.SetPosition(1, end);
 		//GameObject.Destroy(myLine);
+	}
+}
+class MovePair
+{
+	public Direction direction;
+	public TileTypes sensedTile;
+	public MovePair(Direction direction, TileTypes type)
+	{
+		this.direction = direction;
+		this.sensedTile = type;
 	}
 }

@@ -16,6 +16,7 @@ public class GridMap{
 	public TileTypes currentTile;
 	public TileTypes[,] gridData { get; set; }
 	public Node[,] graph { get; set; }
+	public double[,] probabilities;
 
 
 	//Singleton to make sure only 1 map exists at a time
@@ -82,7 +83,10 @@ public class GridMap{
 
 	public void Init()
 	{
+		x_columns++; y_rows++;
+
 		gridData = new TileTypes[x_columns, y_rows];
+		probabilities = new double[x_columns, y_rows];
 	}
 	/// <summary>
 	/// Once the grid map is generated with different tile types, we generate a graph of the map
@@ -92,9 +96,9 @@ public class GridMap{
 	{
 		graph = new Node[x_columns, y_rows];
 		//Loop through to generate graph
-		for (int r = 0; r < y_rows; r++)
+		for (int r = 1; r < y_rows; r++)
 		{
-			for (int c = 0; c < x_columns; c++)
+			for (int c = 1; c < x_columns; c++)
 			{
 				graph[c, r] = new Node();
 				graph[c, r].type = gridData[c, r];

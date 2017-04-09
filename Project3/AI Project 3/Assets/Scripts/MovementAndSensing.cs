@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 public class MovementAndSensing : MonoBehaviour {
 
-	GridMap map;
+	GridMap map = GridMap.Map;
 	TileTypes[] movementTiles;
-    double[,] probabilities;
+    
 
 
 	private void Start()
@@ -139,22 +139,22 @@ public class MovementAndSensing : MonoBehaviour {
                     case Direction.Down:
                         moveY = 1;
                         moveX = 0;
-                        probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
+                        map.probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     case Direction.Up:
                         moveY = -1;
                         moveX = 0;
-                        probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
+						map.probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     case Direction.Right:
                         moveY = 0;
                         moveX = 1;
-                        probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
+						map.probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     case Direction.Left:
                         moveY = 0;
                         moveX = -1;
-                        probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
+						map.probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     default:
                         Debug.Log("We fucked up");
@@ -164,7 +164,21 @@ public class MovementAndSensing : MonoBehaviour {
 
             
             }
-    }
+
+		//doing a test print of all probabilities:
+		string print = "";
+		for (uint i = 1; i < 4; i++)
+		{
+			for (uint j = 1; j < 4; j++)
+			{
+				print += map.probabilities[i, j] + "\t";
+			}
+			print += "\n";
+		}
+		Debug.Log(print);
+
+
+	}
 
     private double calculate_probabilities(uint posX, uint posY, int moveX, int moveY, TileTypes read_value)
     {
@@ -177,9 +191,9 @@ public class MovementAndSensing : MonoBehaviour {
         if ((posX - moveX) >= 0 || (posY - moveY >= 0))
         {
             neighborFlag = true;
-            // If this is true there is a 0.9 chance that we succesfully moved off the neighboring tile onto this one
+			// If this is true there is a 0.9 chance that we succesfully moved off the neighboring tile onto this one
 
-            // Check if the type that we read is actually the type of this tile
+			// Check if the type that we read is actually the type of this tile
             if(read_value == map.gridData[posX, posY])
             {
                 // If this is true there is a 0.9 chance that the tile read was correct
@@ -228,11 +242,5 @@ public class MovementAndSensing : MonoBehaviour {
     }
 
 
-	public enum Direction
-	{
-		Up,
-		Down,
-		Left,
-		Right
-	}
+	
 }
