@@ -162,27 +162,33 @@ public class MovementAndSensing : MonoBehaviour {
                     
                 }
 
+                // We must normalize the values
+                normalize_probabilities();
+
             
             }
 
 		//doing a test print of all probabilities:
 		string print = "";
+        float total_val = 0;
 		for (uint i = 1; i < 4; i++)
 		{
 			for (uint j = 1; j < 4; j++)
 			{
 				print += map.probabilities[i, j] + "\t";
+                total_val += map.probabilities[i, j];
 			}
 			print += "\n";
 		}
-		Debug.Log(print);
+        print += "The total prob = " + total_val + "\n";
+        Debug.Log(print);
 
 
 	}
 
-    private double calculate_probabilities(uint posY, uint posX, int moveX, int moveY, TileTypes read_value)
+    private float calculate_probabilities(uint posY, uint posX, int moveX, int moveY, TileTypes read_value)
     {
-        double nodeProb = 0.0;
+        float nodeProb = 0f;
 
         // Check if there is an adjacent tile that we could have arrived here from
         // If Position of the tile minus the move is an actualy tile value then its possible that we could
@@ -202,12 +208,12 @@ public class MovementAndSensing : MonoBehaviour {
             if(read_value == map.gridData[posY, posX])
             {
                 // If this is true there is a 0.9 chance that the tile read was correct
-                nodeProb = (0.9 * 0.9) + (0.1 * 0.9);
+                nodeProb = (0.9f * 0.9f) + (0.1f * 0.9f);
             }
             else
             {
                 // If the read doesnt match the tile type that means there was a 0.05 chance that we read this tile type
-                nodeProb = (0.9 * 0.05) + (0.1 * 0.05);
+                nodeProb = (0.9f * 0.05f) + (0.1f * 0.05f);
             }
         }
 
@@ -219,12 +225,12 @@ public class MovementAndSensing : MonoBehaviour {
             if (read_value == map.gridData[posY, posX])
             {
                 // If this is true there is a 0.9 chance that the tile read was correct
-                nodeProb = 0.1 * 0.9;
+                nodeProb = 0.1f * 0.9f;
             }
             else
             {
                 // If the read doesnt match the tile type that means there was a 0.05 chance that we read this tile type
-                nodeProb = 0.1 * 0.05;
+                nodeProb = 0.1f * 0.05f;
             }
 
         }
@@ -232,6 +238,23 @@ public class MovementAndSensing : MonoBehaviour {
         // Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
 
         return nodeProb;
+    }
+
+    private void normalize_probabilities()
+    {
+        float normalize_denominator = 0f;
+
+        for(uint i = 1; i < 4; i++)
+            for(uint j = 1; j < 4; j++)
+            {
+                normalize_denominator += map.probabilities[i, j];
+            }
+
+        for(uint i = 1; i < 4; i++)
+            for(uint j = 1; j < 4; j++)
+            {
+                map.probabilities[i, j] = (map.probabilities[i, j] / normalize_denominator);
+            }
     }
 
 
