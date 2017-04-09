@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 public class MovementAndSensing : MonoBehaviour {
 
-	GridMap map = GridMap.Map;
-	TileTypes[] movementTiles;
-    
+    GridMap map = GridMap.Map;
+    TileTypes[] movementTiles;
 
 
-	private void Start()
-	{
-		movementTiles = new TileTypes[3];
-		movementTiles[0] = TileTypes.Normal;
-		movementTiles[1] = TileTypes.Highway;
-		movementTiles[2] = TileTypes.Hard;
+
+    private void Start()
+    {
+        movementTiles = new TileTypes[3];
+        movementTiles[0] = TileTypes.Normal;
+        movementTiles[1] = TileTypes.Highway;
+        movementTiles[2] = TileTypes.Hard;
 
 
         /*
@@ -26,115 +26,115 @@ public class MovementAndSensing : MonoBehaviour {
          */
 
         // Move 1 R=N, Direction=Right
-    
 
-        
+
+
 
     }
-	public void Move(Direction direction)
-	{
-		/*
+    public void Move(Direction direction)
+    {
+        /*
 		 * 90% probability to move 
 		 * 10% to fail and stay
 		 */
 
-		if(Random.Range(1,11) < 10)
-		{
-			// Movement roll successfull
-			bool allowMovement = map.gridData[map.agent_x, map.agent_y] != TileTypes.Blocked;
-			switch (direction)
-			{
-				case Direction.Up:
-					if(map.agent_y == map.y_rows -1)
-					{
-						//At the edge of the map so do nothing
-					}
-					else if( allowMovement )
-					{
-						map.agent_y++;
-					}
-					break;
-				case Direction.Down:
-					if (map.agent_y == 0)
-					{
-						//At the edge of the map so do nothing
-					}
-					else if ( allowMovement )
-					{
-						map.agent_y--;
-					}
-					break;
-				case Direction.Left:
-					if (map.agent_x == 0)
-					{
-						//At the edge of the map so do nothing
-					}
-					else if (allowMovement )
-					{
-						map.agent_x--;
-					}
-					break;
-				case Direction.Right:
-					if (map.agent_x == map.agent_x -1)
-					{
-						//At the edge of the map so do nothing
-					}
-					else if (allowMovement )
-					{
-						map.agent_x++;
-					}
-					break;
-			}
-		}// end movement
-		else
-		{
+        if (Random.Range(1, 11) < 10)
+        {
+            // Movement roll successfull
+            bool allowMovement = map.gridData[map.agent_x, map.agent_y] != TileTypes.Blocked;
+            switch (direction)
+            {
+                case Direction.Up:
+                    if (map.agent_y == map.y_rows - 1)
+                    {
+                        //At the edge of the map so do nothing
+                    }
+                    else if (allowMovement)
+                    {
+                        map.agent_y++;
+                    }
+                    break;
+                case Direction.Down:
+                    if (map.agent_y == 0)
+                    {
+                        //At the edge of the map so do nothing
+                    }
+                    else if (allowMovement)
+                    {
+                        map.agent_y--;
+                    }
+                    break;
+                case Direction.Left:
+                    if (map.agent_x == 0)
+                    {
+                        //At the edge of the map so do nothing
+                    }
+                    else if (allowMovement)
+                    {
+                        map.agent_x--;
+                    }
+                    break;
+                case Direction.Right:
+                    if (map.agent_x == map.agent_x - 1)
+                    {
+                        //At the edge of the map so do nothing
+                    }
+                    else if (allowMovement)
+                    {
+                        map.agent_x++;
+                    }
+                    break;
+            }
+        }// end movement
+        else
+        {
             //movement failed, do nothing
         }
-		//	After we move, we sense where we are;
-		Sense();
-	}
+        //	After we move, we sense where we are;
+        Sense();
+    }
 
-	private void Sense()
-	{
-		/*	90% chance we sense accuratly
+    private void Sense()
+    {
+        /*	90% chance we sense accuratly
 		 *	10% we get wrong info and sense other tiles
 		 */
 
-		if (Random.Range(1, 11) < 10)
-		{
-			map.currentTile = map.gridData[map.x_columns, map.y_rows];
-		}
-		else
-		{
-			// 50% chance for the other 2 tile types to be returned
-			TileTypes correctTile = map.gridData[map.x_columns, map.y_rows];
-		Roll:
-			int roll = Random.Range(0, 3);
-			if(movementTiles[roll] != correctTile)
-			{
-				map.currentTile = movementTiles[roll];
-			}
-			else
-			{
-				goto Roll;
-			}
+        if (Random.Range(1, 11) < 10)
+        {
+            map.currentTile = map.gridData[map.x_columns, map.y_rows];
+        }
+        else
+        {
+            // 50% chance for the other 2 tile types to be returned
+            TileTypes correctTile = map.gridData[map.x_columns, map.y_rows];
+        Roll:
+            int roll = Random.Range(0, 3);
+            if (movementTiles[roll] != correctTile)
+            {
+                map.currentTile = movementTiles[roll];
+            }
+            else
+            {
+                goto Roll;
+            }
 
-		}
+        }
 
-	}
+    }
 
 
     public void ExecuteInstruction(Direction dir_instruction, TileTypes read_value)
     {
         for (uint i = 1; i < 4; i++)
-            for(uint j = 1; j < 4; j++)
+            for (uint j = 1; j < 4; j++)
             {
                 // We have our move instruction, our recorded_read and now we must calculate the probabilty at a given tile
 
                 int moveY;
                 int moveX;
 
-                switch(dir_instruction)
+                switch (dir_instruction)
                 {
                     case Direction.Down:
                         moveY = 1;
@@ -159,85 +159,86 @@ public class MovementAndSensing : MonoBehaviour {
                     default:
                         Debug.Log("We put the wrong instruction in");
                         break;
-                    
+
                 }
 
                 // We must normalize the values
                 normalize_probabilities();
 
-            
+
             }
 
-		//doing a test print of all probabilities:
-		string print = "";
+        //doing a test print of all probabilities:
+        string print = "";
         float total_val = 0;
-		for (uint i = 1; i < 4; i++)
-		{
-			for (uint j = 1; j < 4; j++)
-			{
-				print += map.probabilities[i, j] + "\t";
+        for (uint i = 1; i < 4; i++)
+        {
+            for (uint j = 1; j < 4; j++)
+            {
+                print += map.probabilities[i, j] + "\t";
                 total_val += map.probabilities[i, j];
-			}
-			print += "\n";
-		}
+            }
+            print += "\n";
+        }
         print += "The total prob = " + total_val + "\n";
         Debug.Log(print);
 
 
-	}
+    }
 
     private float calculate_probabilities(uint posY, uint posX, int moveX, int moveY, TileTypes read_value)
     {
-        float nodeProb = 0f;
 
-        // Check if there is an adjacent tile that we could have arrived here from
-        // If Position of the tile minus the move is an actualy tile value then its possible that we could
-        // have come from there. If it is less than 0 its off the map and not possible
-
-        if(map.gridData[posY, posX] == TileTypes.Blocked)
+        // IF YOU ARE THE BLOCKED CELL YOU WILL ALWAYS HAVE A PROBABILITY OF 0 OF BEING UNOCCUPIED
+        if (map.gridData[posY, posX] == TileTypes.Blocked)
         {
-            return nodeProb;
+            return 0f;
         }
 
-        else if ((posX - moveX) > 0 && (posY - moveY > 0))
+        // IF YOU ARE ATTEMPTING TO MOVE THROUGH THE BOUNDARY OF THE MAP THE PROBABILITY OF REMAINING WHERE YOU ARE IS 1
+        else if (posX + moveX > 3 || posX + moveX < 3 || posY + moveY > 3 || posY + moveY < 3)
         {
-            // Debug.Log("Has Neighbor relative to move");
-			// If this is true there is a 0.9 chance that we succesfully moved off the neighboring tile onto this one
-
-			// Check if the type that we read is actually the type of this tile
-            if(read_value == map.gridData[posY, posX])
-            {
-                // If this is true there is a 0.9 chance that the tile read was correct
-                nodeProb = (0.9f * 0.9f) + (0.1f * 0.9f);
-            }
+            if (map.gridData[posY, posX] == read_value)
+                return 1f * (0.9f);
             else
-            {
-                // If the read doesnt match the tile type that means there was a 0.05 chance that we read this tile type
-                nodeProb = (0.9f * 0.05f) + (0.1f * 0.05f);
-            }
+                return 1f * 0.05f;
         }
 
+        // IF YOU ARE AN ORDINARY CELL
         else
         {
-            // Debug.Log("Has no neighbor relative to move");
-            // If there is no neighboring tile the only way that this tile could be the reached tile after a move is if there was
-            // an unsuccesful move with 0.1 chance
-            if (read_value == map.gridData[posY, posX])
+
+            // IF YOU ARE ATTEMPTING TO MOVE INTO A BLOCKED TILE THAN THE PROBABILITY OF YOU REMAINING WHERE YOU ARE IS 1
+            if (map.gridData[posY + moveY, moveX + posX] == TileTypes.Blocked)
             {
-                // If this is true there is a 0.9 chance that the tile read was correct
-                nodeProb = 0.1f * 0.9f;
+                if (map.gridData[posY, posX] == read_value)
+                    return 1f * (0.9f);
+                else
+                    return 1f * 0.05f;
             }
+
+            // IF YOU COULD HAVE BEEN MOVED TO FROM ANOTHER CELL
+            else if (posX - moveX > 0 && posY - moveY > 0)
+            {
+
+                if (map.gridData[posY, posX] == read_value)
+                    return 1f * (0.9f);
+                else
+                    return 1f * 0.05f;
+            }
+
             else
             {
-                // If the read doesnt match the tile type that means there was a 0.05 chance that we read this tile type
-                nodeProb = 0.1f * 0.05f;
+                if (map.gridData[posY, posX] == read_value)
+                    return 0.1f * (0.9f);
+                else
+                    return 0.1f * 0.05f;
             }
 
         }
 
         // Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
 
-        return nodeProb;
     }
 
     private void normalize_probabilities()
