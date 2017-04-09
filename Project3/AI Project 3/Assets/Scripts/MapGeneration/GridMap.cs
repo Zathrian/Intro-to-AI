@@ -87,6 +87,13 @@ public class GridMap{
 
 		gridData = new TileTypes[x_columns, y_rows];
 		probabilities = new double[x_columns, y_rows];
+		for (uint i = 1; i < 4; i++)
+		{
+			for (uint j = 1; j < 4; j++)
+			{
+				probabilities[1, j] = 1 / 8.0;
+			}
+		}
 	}
 	/// <summary>
 	/// Once the grid map is generated with different tile types, we generate a graph of the map
