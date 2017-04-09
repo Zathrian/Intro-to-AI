@@ -91,7 +91,7 @@ public class GridMap{
 		{
 			for (uint j = 1; j < 4; j++)
 			{
-				probabilities[1, j] = 1 / 8.0;
+				probabilities[i, j] = 1 / 8.0;
 			}
 		}
 	}

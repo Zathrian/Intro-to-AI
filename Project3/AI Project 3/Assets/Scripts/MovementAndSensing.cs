@@ -139,25 +139,25 @@ public class MovementAndSensing : MonoBehaviour {
                     case Direction.Down:
                         moveY = 1;
                         moveX = 0;
-                        map.probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
+                        map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value); // p(i, j) * p(i, j) with new prob
                         break;
                     case Direction.Up:
                         moveY = -1;
                         moveX = 0;
-						map.probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
+                        map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     case Direction.Right:
                         moveY = 0;
                         moveX = 1;
-						map.probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
+                        map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     case Direction.Left:
                         moveY = 0;
                         moveX = -1;
-						map.probabilities[i, j] = calculate_probabilities(i, j, moveX, moveY, read_value);
+                        map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     default:
-                        Debug.Log("We fucked up");
+                        Debug.Log("We put the wrong instruction in");
                         break;
                     
                 }
@@ -180,52 +180,43 @@ public class MovementAndSensing : MonoBehaviour {
 
 	}
 
-    private double calculate_probabilities(uint posX, uint posY, int moveX, int moveY, TileTypes read_value)
+    private double calculate_probabilities(uint posY, uint posX, int moveX, int moveY, TileTypes read_value)
     {
-        double nodeProb = 0;
-        bool neighborFlag = false;
+        double nodeProb = 0.0;
 
         // Check if there is an adjacent tile that we could have arrived here from
         // If Position of the tile minus the move is an actualy tile value then its possible that we could
         // have come from there. If it is less than 0 its off the map and not possible
-        if ((posX - moveX) >= 0 || (posY - moveY >= 0))
+
+        if(map.gridData[posY, posX] == TileTypes.Blocked)
         {
-            neighborFlag = true;
+            return nodeProb;
+        }
+
+        else if ((posX - moveX) > 0 && (posY - moveY > 0))
+        {
+            // Debug.Log("Has Neighbor relative to move");
 			// If this is true there is a 0.9 chance that we succesfully moved off the neighboring tile onto this one
 
 			// Check if the type that we read is actually the type of this tile
-            if(read_value == map.gridData[posX, posY])
+            if(read_value == map.gridData[posY, posX])
             {
                 // If this is true there is a 0.9 chance that the tile read was correct
-                nodeProb = 0.9 * 0.9;
+                nodeProb = (0.9 * 0.9) + (0.1 * 0.9);
             }
             else
             {
                 // If the read doesnt match the tile type that means there was a 0.05 chance that we read this tile type
-                nodeProb = 0.9 * 0.05;
-            }
-        }
- 
-        // If there is a neighbor we must add the probability of the neighbor with the probability of a failed move
-        else if(neighborFlag)
-        {
-            if (read_value == map.gridData[posX, posY])
-            {
-                // If this is true there is a 0.9 chance that the tile read was correct
-                nodeProb = nodeProb + 0.1 * 0.9;
-            }
-            else
-            {
-                // If the read doesnt match the tile type that means there was a 0.05 chance that we read this tile type
-                nodeProb = nodeProb + 0.1 * 0.05;
+                nodeProb = (0.9 * 0.05) + (0.1 * 0.05);
             }
         }
 
         else
         {
+            // Debug.Log("Has no neighbor relative to move");
             // If there is no neighboring tile the only way that this tile could be the reached tile after a move is if there was
             // an unsuccesful move with 0.1 chance
-            if (read_value == map.gridData[posX, posY])
+            if (read_value == map.gridData[posY, posX])
             {
                 // If this is true there is a 0.9 chance that the tile read was correct
                 nodeProb = 0.1 * 0.9;
@@ -237,6 +228,8 @@ public class MovementAndSensing : MonoBehaviour {
             }
 
         }
+
+        // Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
 
         return nodeProb;
     }

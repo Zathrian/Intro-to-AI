@@ -274,6 +274,7 @@ public class InitializeWorld : MonoBehaviour
 		//	read_value = sensor data;
 		foreach (MovePair action in executedActions)
 		{
+            // Debug.Log(action.direction + ", " + action.sensedTile.ToString());
 			GetComponent<MovementAndSensing>().ExecuteInstruction(action.direction, action.sensedTile);
 		}
 		
