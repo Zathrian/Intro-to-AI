@@ -199,9 +199,9 @@ public class MovementAndSensing : MonoBehaviour {
         {
             Debug.Log("Tile (" + posY + ", " + posX + ") is attempting to move out of bounds");
             if (sensorReadCorrect(posY, posX, read_value))
-                return 0.9f * 1f;
+                return (0.9f + 1f) * 0.9f;
             else
-                return 0.05f * 1f;
+                return (0.9f + 1f) * 0.05f;
         }
 
         else if (canBeMovedOnto(posY, posX, moveY, moveX))
@@ -224,8 +224,6 @@ public class MovementAndSensing : MonoBehaviour {
 
         //Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
 
-        return 0f;
-
 
         // Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
 
@@ -240,7 +238,7 @@ public class MovementAndSensing : MonoBehaviour {
     {
         try
         {
-            if (map.gridData[posY + moveY, posX + moveY] == TileTypes.Blocked)
+            if (map.gridData[posY + moveY, posX + moveX] == TileTypes.Blocked)
                 return true;
             else
                 return false;
