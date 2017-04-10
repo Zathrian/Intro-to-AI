@@ -275,7 +275,7 @@ public class InitializeWorld : MonoBehaviour
 		foreach (MovePair action in executedActions)
 		{
             // Debug.Log(action.direction + ", " + action.sensedTile.ToString());
-			GetComponent<MovementAndSensing>().ExecuteInstruction(action.direction, action.sensedTile);
+			GetComponent<Filter>().ExecuteInstruction(action.direction, action.sensedTile);
 		}
 		
 	}
