@@ -175,7 +175,7 @@ public class MovementAndSensing : MonoBehaviour {
         {
             for (uint j = 1; j < 4; j++)
             {
-                print += map.probabilities[i, j] + "\t";
+                print += System.Math.Round(map.probabilities[i, j], 6) + "\t";
                 total_val += map.probabilities[i, j];
             }
             print += "\n";
@@ -189,57 +189,86 @@ public class MovementAndSensing : MonoBehaviour {
     private float calculate_probabilities(uint posY, uint posX, int moveX, int moveY, TileTypes read_value)
     {
 
-        // IF YOU ARE THE BLOCKED CELL YOU WILL ALWAYS HAVE A PROBABILITY OF 0 OF BEING UNOCCUPIED
         if (map.gridData[posY, posX] == TileTypes.Blocked)
-        {
             return 0f;
-        }
-
-        // IF YOU ARE ATTEMPTING TO MOVE THROUGH THE BOUNDARY OF THE MAP THE PROBABILITY OF REMAINING WHERE YOU ARE IS 1
-        else if (posX + moveX > 3 || posX + moveX < 3 || posY + moveY > 3 || posY + moveY < 3)
+    
+        else if (moveOutOfBounds(posY, posX, moveY, moveX) || neighborBlocked(posY, posX, moveY, moveX))
         {
-            if (map.gridData[posY, posX] == read_value)
-                return 1f * (0.9f);
+            if (sensorReadCorrect(posY, posX, read_value))
+                return 0.9f * 1f;
             else
-                return 1f * 0.05f;
+                return 0.05f * 1f;
         }
 
-        // IF YOU ARE AN ORDINARY CELL
+        else if (canBeMovedOnto(posY, posX, moveY, moveX))
+        {
+            if (sensorReadCorrect(posY, posX, read_value))
+                return 0.9f * 0.9f + 0.1f * 0.9f;
+            else
+                return 0.05f * 0.9f + 0.05f * 0.1f;
+        }
+
         else
         {
-
-            // IF YOU ARE ATTEMPTING TO MOVE INTO A BLOCKED TILE THAN THE PROBABILITY OF YOU REMAINING WHERE YOU ARE IS 1
-            if (map.gridData[posY + moveY, moveX + posX] == TileTypes.Blocked)
-            {
-                if (map.gridData[posY, posX] == read_value)
-                    return 1f * (0.9f);
-                else
-                    return 1f * 0.05f;
-            }
-
-            // IF YOU COULD HAVE BEEN MOVED TO FROM ANOTHER CELL
-            else if (posX - moveX > 0 && posY - moveY > 0)
-            {
-
-                if (map.gridData[posY, posX] == read_value)
-                    return 1f * (0.9f);
-                else
-                    return 1f * 0.05f;
-            }
-
-            else
-            {
-                if (map.gridData[posY, posX] == read_value)
-                    return 0.1f * (0.9f);
-                else
-                    return 0.1f * 0.05f;
-            }
-
+            Debug.Log("WE MESSED UP");
         }
+
+        //Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
+
+        return 0f;
+
 
         // Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
 
     }
+
+
+
+
+
+
+    private bool neighborBlocked(uint posY, uint posX, int moveY, int moveX)
+    {
+        try
+        {
+            if (map.gridData[posY + moveY, posX + moveY] == TileTypes.Blocked)
+                return true;
+            else
+                return false;
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
+    private bool moveOutOfBounds(uint posY, uint posX, int moveY, int moveX)
+    {
+        if (posY + moveY > 3 || posY + moveY < 1 || posX + moveX > 3 || posX + moveX < 1)
+        {
+            return true;
+        }
+
+        else
+            return false;
+    }
+
+    private bool canBeMovedOnto(uint posY, uint posX, int moveY, int moveX)
+    {
+        if (map.gridData[posY - moveY, posX - moveY] != TileTypes.Blocked)
+            return true;
+        else
+            return false;
+    }
+
+    private bool sensorReadCorrect(uint posY, uint posX, TileTypes sensor)
+    {
+        if (map.gridData[posY, posX] == sensor)
+            return true;
+        else
+            return false;
+    }
+
 
     private void normalize_probabilities()
     {
