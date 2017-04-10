@@ -208,9 +208,9 @@ public class MovementAndSensing : MonoBehaviour {
         {
             Debug.Log("Tile (" + posY + ", " + posX + ") is not moving out of bounds and can be moved onto");
             if (sensorReadCorrect(posY, posX, read_value))
-                return 0.9f * 0.9f + 0.1f * 0.9f;
+                return (0.9f + 0.1f) * 0.9f;
             else
-                return 0.05f * 0.9f + 0.05f * 0.1f;
+                return (0.9f + 0.1f) * 0.05f;
         }
 
         else
