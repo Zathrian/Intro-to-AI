@@ -190,10 +190,14 @@ public class MovementAndSensing : MonoBehaviour {
     {
 
         if (map.gridData[posY, posX] == TileTypes.Blocked)
+        {
+            Debug.Log("Tile (" + posY + ", " + posX + ") is blocked");
             return 0f;
-    
+        }
+
         else if (moveOutOfBounds(posY, posX, moveY, moveX) || neighborBlocked(posY, posX, moveY, moveX))
         {
+            Debug.Log("Tile (" + posY + ", " + posX + ") is attempting to move out of bounds");
             if (sensorReadCorrect(posY, posX, read_value))
                 return 0.9f * 1f;
             else
@@ -202,6 +206,7 @@ public class MovementAndSensing : MonoBehaviour {
 
         else if (canBeMovedOnto(posY, posX, moveY, moveX))
         {
+            Debug.Log("Tile (" + posY + ", " + posX + ") is not moving out of bounds and can be moved onto");
             if (sensorReadCorrect(posY, posX, read_value))
                 return 0.9f * 0.9f + 0.1f * 0.9f;
             else
@@ -210,7 +215,11 @@ public class MovementAndSensing : MonoBehaviour {
 
         else
         {
-            Debug.Log("WE MESSED UP");
+            Debug.Log("This tile cannot be moved onto and can move off of it");
+            if (sensorReadCorrect(posY, posX, read_value))
+                return 0.1f * 0.9f;
+            else
+                return 0.1f * 0.05f;
         }
 
         //Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
@@ -256,7 +265,10 @@ public class MovementAndSensing : MonoBehaviour {
     private bool canBeMovedOnto(uint posY, uint posX, int moveY, int moveX)
     {
         if (map.gridData[posY - moveY, posX - moveY] != TileTypes.Blocked)
-            return true;
+            if (posY - moveY > 0 && posY - moveY < 4 && posX - moveX > 0 && posX - moveX < 4)
+                return true;
+            else
+                return false;
         else
             return false;
     }
