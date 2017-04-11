@@ -12,7 +12,12 @@ public class GridMap{
 	public int x_columns { get; set; } //x coordinate
 	public GameObject start { get; set; }
 	public int agent_x = 0;
-	public int agent_y = 0;    // x and y co-ordinates of the characters location
+	public int agent_y = 0;    // x and y co-ordinates of the characters current location
+	public int start_x = 0;
+	public int start_y = 0;     // starting location
+	public List<Vector2> path_taken = new List<Vector2>();
+	public List<Direction> action = new List<Direction>();
+	public List<TileTypes> sensor = new List<TileTypes>();
 	public TileTypes currentTile;
 	public TileTypes[,] gridData { get; set; }
 	public Node[,] graph { get; set; }
@@ -86,6 +91,28 @@ public class GridMap{
         return ret;
     }
 
+	public Direction StringToDirection(string direction)
+	{
+		//Initialize default as grass;
+		Direction ret = Direction.Down; // default
+		switch (direction)
+		{
+			case "U":
+				ret = Direction.Up;
+				break;
+			case "D":
+				ret = Direction.Down;
+				break;
+			case "L":
+				ret = Direction.Left;
+				break;
+			case "R":
+				ret = Direction.Right;
+				break;
+
+		}
+		return ret;
+	}
 
 	public void Init()
 	{

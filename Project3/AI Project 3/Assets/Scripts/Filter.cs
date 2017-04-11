@@ -30,7 +30,7 @@ public class Filter : MonoBehaviour {
 
 
     }
-    public Vector2 Move(Direction direction)
+    public void Move(Direction direction)
 
     {
         /*
@@ -63,25 +63,33 @@ public class Filter : MonoBehaviour {
             }
 			bool allowMovement =!(moveOutOfBounds(map.agent_y, map.agent_x, moveY, moveX) || map.gridData[map.agent_y, map.agent_x] == TileTypes.Blocked);
 			if (allowMovement)
-				return new Vector2(map.agent_x + moveX, map.agent_y + moveY);
-			else
-				return new Vector2(map.agent_x, map.agent_y);
+			{
+				Debug.Log(moveOutOfBounds(map.agent_y, map.agent_x, moveY, moveX) + " " + (map.gridData[map.agent_y, map.agent_x] == TileTypes.Blocked));
+				map.agent_x += moveX; map.agent_y += moveY;
+				Debug.Log("Printing Location " + map.agent_y + " " + map.agent_x + " | " + moveY + " " + moveX);
+			}
+
 		}// end movement
-		else
-		{
-			return new Vector2(map.agent_x, map.agent_y);
-		}
+
+		Sense();
     }
 
-    private void Sense()
+    public void Sense()
     {
-        /*	90% chance we sense accuratly
+		/*	90% chance we sense accuratly
 		 *	10% we get wrong info and sense other tiles
 		 */
-
         if (Random.Range(1, 11) < 10)
         {
-            map.currentTile = map.gridData[map.agent_y, map.agent_x];
+			try
+			{
+				map.currentTile = map.gridData[map.agent_y, map.agent_x];
+			}
+			catch(System.IndexOutOfRangeException)
+			{
+				Debug.Log("Out of range: " + map.agent_y + " " + map.agent_x);
+			}
+           
         }
         else
         {
@@ -104,9 +112,9 @@ public class Filter : MonoBehaviour {
 
     public void ExecuteInstruction(Direction dir_instruction, TileTypes read_value)
     {
-        float[,] probArray = new float[4,4];
-        for (int i = 1; i < 4; i++)
-            for (int j = 1; j < 4; j++)
+        float[,] probArray = new float[map.y_rows,map.x_columns];
+        for (int i = 1; i < map.x_columns; i++)
+            for (int j = 1; j < map.x_columns; j++)
             {
                 // We have our move instruction, our recorded_read and now we must calculate the probabilty at a given tile
 
@@ -230,19 +238,23 @@ public class Filter : MonoBehaviour {
 
     public bool moveOutOfBounds(int posY, int posX, int moveY, int moveX)
     {
-        if (posY + moveY > 3 || posY + moveY < 1 || posX + moveX > 3 || posX + moveX < 1)
+        if (posY + moveY > map.x_columns -1 || posY + moveY < 1 || posX + moveX > map.y_rows - 1 || posX + moveX < 1)
         {
             return true;
         }
-
         else
-            return false;
+		{
+			//Debug.Log("In move outta bounds " + (posY + moveY) + " " + (posX + moveX) + " " + map.y_rows + " " + map.x_columns);
+			return false;
+		}
+            
     }
 
     public bool canBeMovedOnto(int posY, int posX, int moveY, int moveX)
     {
-        if (map.gridData[posY - moveY, posX - moveY] != TileTypes.Blocked)
-            if (posY - moveY > 0 && posY - moveY < 4 && posX - moveX > 0 && posX - moveX < 4)
+		Debug.Log("In move outta bounds " + (posY + moveY) + " " + (posX + moveX) + " " + map.y_rows + " " + map.x_columns);
+		if (map.gridData[posY - moveY, posX - moveY] != TileTypes.Blocked)
+            if (posY - moveY > 0 && posY - moveY < map.y_rows && posX - moveX > 0 && posX - moveX < map.x_columns)
                 return true;
             else
                 return false;
@@ -262,14 +274,14 @@ public class Filter : MonoBehaviour {
     {
         float normalize_denominator = 0f;
 
-        for(uint i = 1; i < 4; i++)
-            for(uint j = 1; j < 4; j++)
+        for(uint i = 1; i < map.x_columns; i++)
+            for(uint j = 1; j < map.x_columns; j++)
             {
                 normalize_denominator += map.probabilities[i, j];
             }
 
-        for(uint i = 1; i < 4; i++)
-            for(uint j = 1; j < 4; j++)
+        for(uint i = 1; i < map.x_columns; i++)
+            for(uint j = 1; j < map.x_columns; j++)
             {
                 map.probabilities[i, j] = (map.probabilities[i, j] / normalize_denominator);
             }
@@ -280,9 +292,9 @@ public class Filter : MonoBehaviour {
         //doing a test print of all probabilities:
         string print = "";
         float total_val = 0;
-        for (uint i = 1; i < 4; i++)
+        for (uint i = 1; i < map.x_columns; i++)
         {
-            for (uint j = 1; j < 4; j++)
+            for (uint j = 1; j < map.x_columns; j++)
             {
                 print += System.Math.Round(state[i, j], 6) + "\t";
                 total_val += state[i, j];
@@ -296,8 +308,8 @@ public class Filter : MonoBehaviour {
 
     public void copyArray(float[,] newArray, float[,] copyArray)
     {
-        for(int i = 1; i < 4; i++)
-            for(int j = 1; j < 4; j++)
+        for(int i = 1; i < map.x_columns; i++)
+            for(int j = 1; j < map.x_columns; j++)
             {
                 newArray[i, j] = copyArray[i, j];
             }

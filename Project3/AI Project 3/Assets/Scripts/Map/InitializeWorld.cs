@@ -46,9 +46,9 @@ public class InitializeWorld : MonoBehaviour
 		//Cursor.visible = false;
 		movementArray = new Direction[4];
 		movementArray[0] = Direction.Down;
-		movementArray[0] = Direction.Left;
-		movementArray[0] = Direction.Up;
-		movementArray[0] = Direction.Right;
+		movementArray[1] = Direction.Left;
+		movementArray[2] = Direction.Up;
+		movementArray[3] = Direction.Right;
 	}
 	public void GenerateRandom()
 	{
@@ -112,6 +112,7 @@ public class InitializeWorld : MonoBehaviour
 		}
 
 		map.GenerateGraph();
+		
 		Debug.Log("Finished Grid Initialization");
 		InitializeGrid();
 	}
@@ -201,21 +202,55 @@ public class InitializeWorld : MonoBehaviour
 		map.GenerateGraph();
 		InitializeGrid();
 	}
+	public void LoadGroundData()
+	{
+		var path = EditorUtility.OpenFilePanel("Choose map file", "", "dat");
+		string[] buffer = System.IO.File.ReadAllLines(path);
+		string[] starting_location = buffer[0].Split(' ');
+		map.start_x = int.Parse(starting_location[0]);
+		map.start_y = int.Parse(starting_location[1]);
 
+		//For the next 100 lines, get the path taken by the agent;
+		for(int i = 1; i<=100;i++)
+		{
+			string[] coord = buffer[i].Split(' ');
+			int x = int.Parse(starting_location[0]);
+			int y = int.Parse(starting_location[1]);
+			map.path_taken.Add(new Vector2(x, y));
+		}
+
+
+		char[] columnInfo = new char[100];
+		System.IO.StringReader readString = new System.IO.StringReader(buffer[102]);
+		readString.Read(columnInfo, 0, 100);
+		for (int j = 0; j < 100; j++)
+		{
+			map.action.Add(map.StringToDirection(columnInfo[j].ToString()));
+		}
+		columnInfo = new char[100];
+		readString = new System.IO.StringReader(buffer[103]);
+		readString.Read(columnInfo, 0, 100);
+		for (int j = 0; j < 100; j++)
+		{
+			map.sensor.Add(map.StringToTile(columnInfo[j].ToString()));
+		}
+		Debug.Log(map.action.Count + " " + map.sensor.Count);
+		Debug.Log("Loaded all ground truth data");
+	}
 	public void SaveMap(int ground_truth_index)
 	{
 		/*
 		 * Save the map in a map file
 		 * Save 10 sets of 100 random actions performed by an agent and the observations along with start position
 		 */
-		Filter sense = new Filter();
+		Filter sense = GetComponent<Filter>();
 		var path = EditorUtility.SaveFilePanel("Select file name and location", "", "test", "dat");
 		// Get all the grid map data and write it to a valid map file
 		// We will assume, for ease, that the output file will be in the home directory of the program
 
 		List<string> buffer = new List<string>();
 
-		for(int i =0; i<10; i++)
+		for(int i =0; i<1; i++)
 		{
 			var ground_action_file_path = path + "_ground_data_" + i + ".dat";
 		check:
@@ -224,19 +259,26 @@ public class InitializeWorld : MonoBehaviour
 				goto check;
 			map.agent_y = (int)start.y;
 			map.agent_x = (int)start.x;
+			Debug.Log("Start: " + start.y + " " + start.x + " starting tile: " + map.gridData[(int)start.y,(int)start.x]);
 			string action_string = "";
 			string movement_string = "";
 			string sense_string = "";
 			for(int j = 0; j<100; j++)
 			{
 				Direction action = movementArray[Random.Range(0, 4)];
-				Vector2 move_coord = sense.Move(action);
-				action_string += action;
-				movement_string += move_coord.y + " " + move_coord.x + "\n";
-				sense_string = map.TileToString(map.currentTile);
+				sense.Move(action);
+				action_string += action.ToString().Substring(0,1);
+				movement_string += map.agent_y + " " + map.agent_x + "\n";
+				sense_string += map.TileToString(map.currentTile);
 			}
+			buffer.Add(start.y + " " + start.x);
+			buffer.Add(movement_string);
+			buffer.Add(action_string);
+			buffer.Add(sense_string);
+			System.IO.File.WriteAllLines(ground_action_file_path, buffer.ToArray());
 		}
 
+		buffer = new List<string>();
 		// Time to enter terrain data in form of strings
 		string row = "";
 		for (int r = 0; r < map.y_rows; r++)
@@ -320,19 +362,15 @@ public class InitializeWorld : MonoBehaviour
 		 * Direction: Right Right Down Down
 		 * Sensor:	  N N H H
 		 */
-		List<MovePair> executedActions = new List<MovePair>();
-		executedActions.Add(new MovePair(Direction.Right, TileTypes.Normal));
-		executedActions.Add(new MovePair(Direction.Right, TileTypes.Normal));
-		executedActions.Add(new MovePair(Direction.Down, TileTypes.Highway));
-		executedActions.Add(new MovePair(Direction.Down, TileTypes.Highway));
+		Filter filter = GetComponent<Filter>();
 		//	read_value = sensor data;
-		foreach (MovePair action in executedActions)
+		for (int i = 0; i < 100; i++)
 		{
             // Debug.Log(action.direction + ", " + action.sensedTile.ToString());
-			GetComponent<Filter>().ExecuteInstruction(action.direction, action.sensedTile);
+			filter.ExecuteInstruction(map.action[i], map.sensor[i]);
 		}
 
-        GetComponent<Viterbi>().start();
+     //   GetComponent<Viterbi>().start();
 		
 	}
 
