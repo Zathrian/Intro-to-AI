@@ -104,7 +104,7 @@ public class Filter : MonoBehaviour {
 
     public void ExecuteInstruction(Direction dir_instruction, TileTypes read_value)
     {
-
+        float[,] probArray = new float[4,4];
         for (int i = 1; i < 4; i++)
             for (int j = 1; j < 4; j++)
             {
@@ -115,20 +115,24 @@ public class Filter : MonoBehaviour {
 
                 switch (dir_instruction)
                 {
+        
                     case Direction.Down:
                         moveY = 1;
                         moveX = 0;
                         map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value); // p(i, j) * p(i, j) with new prob
+                        copyArray(probArray, map.probabilities);
                         break;
                     case Direction.Up:
                         moveY = -1;
                         moveX = 0;
                         map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
+                        copyArray(probArray, map.probabilities);
                         break;
                     case Direction.Right:
                         moveY = 0;
                         moveX = 1;
                         map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
+                        copyArray(probArray, map.probabilities);
                         break;
                     case Direction.Left:
                         moveY = 0;
@@ -142,21 +146,22 @@ public class Filter : MonoBehaviour {
                 }
             }
 
+        /*
         float[,] newFloatArray = new float[4, 4];
         for(int i = 1; i < 4; i++)
             for(int j = 1; j < 4; j++)
             {
                 newFloatArray[i, j] = map.probabilities[i, j];
             }
+            */ 
 
         // We must normalize the values
         normalize_probabilities();
+        // Copy to the new array
+        copyArray(probArray, map.probabilities);
         Debug.Log("PRINT FROM FILTER");
         printState(map.probabilities);
-        map.states.Add(map.probabilities);
-
-
-
+        map.states.Add(probArray);
     }
 
     private float calculate_probabilities(int posY, int posX, int moveX, int moveY, TileTypes read_value)
@@ -289,4 +294,12 @@ public class Filter : MonoBehaviour {
 
     }
 
+    public void copyArray(float[,] newArray, float[,] copyArray)
+    {
+        for(int i = 1; i < 4; i++)
+            for(int j = 1; j < 4; j++)
+            {
+                newArray[i, j] = copyArray[i, j];
+            }
+    }
 }
