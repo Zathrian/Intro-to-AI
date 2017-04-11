@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Assets.Scripts;
 
 public class InitializeWorld : MonoBehaviour
 {
@@ -275,8 +276,10 @@ public class InitializeWorld : MonoBehaviour
 		foreach (MovePair action in executedActions)
 		{
             // Debug.Log(action.direction + ", " + action.sensedTile.ToString());
-			GetComponent<MovementAndSensing>().ExecuteInstruction(action.direction, action.sensedTile);
+			GetComponent<Filter>().ExecuteInstruction(action.direction, action.sensedTile);
 		}
+
+        GetComponent<Viterbi>().start();
 		
 	}
 

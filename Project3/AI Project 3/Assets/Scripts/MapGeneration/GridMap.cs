@@ -17,6 +17,7 @@ public class GridMap{
 	public TileTypes[,] gridData { get; set; }
 	public Node[,] graph { get; set; }
 	public float[,] probabilities;
+    public List<float[,]> states = new List<float[,]>();
 
 
 	//Singleton to make sure only 1 map exists at a time
@@ -87,9 +88,9 @@ public class GridMap{
 
 		gridData = new TileTypes[x_columns, y_rows];
 		probabilities = new float[x_columns, y_rows];
-		for (uint i = 1; i < 4; i++)
+		for (int i = 1; i < 4; i++)
 		{
-			for (uint j = 1; j < 4; j++)
+			for (int j = 1; j < 4; j++)
 			{
                 probabilities[i, j] = (1f / 8.0f);
 			}

@@ -3,35 +3,11 @@ using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class MovementAndSensing : MonoBehaviour {
+public class Filter : MonoBehaviour {
 
     GridMap map = GridMap.Map;
     TileTypes[] movementTiles;
 
-
-
-    private void Start()
-    {
-        movementTiles = new TileTypes[3];
-        movementTiles[0] = TileTypes.Normal;
-        movementTiles[1] = TileTypes.Highway;
-        movementTiles[2] = TileTypes.Hard;
-
-
-        /*
-         *          (1, 1, H)--(1, 2, H)--(1, 3, T)
-         *              |         |           |
-         *          (2, 1, N)--(2, 2, N)--(2, 3, N)
-         *              |         |           |
-         *          (3, 1, N)--(3, 2, B)--(3, 3, H)
-         */
-
-        // Move 1 R=N, Direction=Right
-
-
-
-
-    }
     public void Move(Direction direction)
     {
         /*
@@ -127,18 +103,8 @@ public class MovementAndSensing : MonoBehaviour {
     public void ExecuteInstruction(Direction dir_instruction, TileTypes read_value)
     {
 
-
-        float[,] probabilities = new float[4, 4];
-        for (uint i = 1; i < 4; i++)
-        {
-            for (uint j = 1; j < 4; j++)
-            {
-                probabilities[i, j] = (1f / 8.0f);
-            }
-        }
-
-        for (uint i = 1; i < 4; i++)
-            for (uint j = 1; j < 4; j++)
+        for (int i = 1; i < 4; i++)
+            for (int j = 1; j < 4; j++)
             {
                 // We have our move instruction, our recorded_read and now we must calculate the probabilty at a given tile
 
@@ -151,58 +117,47 @@ public class MovementAndSensing : MonoBehaviour {
                         moveY = 1;
                         moveX = 0;
                         map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value); // p(i, j) * p(i, j) with new prob
-                        probabilities[i, j] = probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     case Direction.Up:
                         moveY = -1;
                         moveX = 0;
                         map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
-                        probabilities[i, j] = probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     case Direction.Right:
                         moveY = 0;
                         moveX = 1;
                         map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
-                        probabilities[i, j] = probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     case Direction.Left:
                         moveY = 0;
                         moveX = -1;
                         map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
-                        probabilities[i, j] = probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
                         break;
                     default:
                         Debug.Log("We put the wrong instruction in");
                         break;
 
                 }
-
-                // We must normalize the values
-                normalize_probabilities();
-
-                TemporalProbabilityProblem.stateList.Add(probabilities);
-
             }
 
-        //doing a test print of all probabilities:
-        string print = "";
-        float total_val = 0;
-        for (uint i = 1; i < 4; i++)
-        {
-            for (uint j = 1; j < 4; j++)
+        float[,] newFloatArray = new float[4, 4];
+        for(int i = 1; i < 4; i++)
+            for(int j = 1; j < 4; j++)
             {
-                print += System.Math.Round(map.probabilities[i, j], 6) + "\t";
-                total_val += map.probabilities[i, j];
+                newFloatArray[i, j] = map.probabilities[i, j];
             }
-            print += "\n";
-        }
-        print += "The total prob = " + total_val + "\n";
-        Debug.Log(print);
+
+        // We must normalize the values
+        normalize_probabilities();
+        Debug.Log("PRINT FROM FILTER");
+        printState(map.probabilities);
+        map.states.Add(map.probabilities);
+
 
 
     }
 
-    private float calculate_probabilities(uint posY, uint posX, int moveX, int moveY, TileTypes read_value)
+    private float calculate_probabilities(int posY, int posX, int moveX, int moveY, TileTypes read_value)
     {
 
         if (map.gridData[posY, posX] == TileTypes.Blocked)
@@ -251,7 +206,7 @@ public class MovementAndSensing : MonoBehaviour {
 
     }
 
-    private bool neighborBlocked(uint posY, uint posX, int moveY, int moveX)
+    public bool neighborBlocked(int posY, int posX, int moveY, int moveX)
     {
         try
         {
@@ -266,7 +221,7 @@ public class MovementAndSensing : MonoBehaviour {
         }
     }
 
-    private bool moveOutOfBounds(uint posY, uint posX, int moveY, int moveX)
+    public bool moveOutOfBounds(int posY, int posX, int moveY, int moveX)
     {
         if (posY + moveY > 3 || posY + moveY < 1 || posX + moveX > 3 || posX + moveX < 1)
         {
@@ -277,7 +232,7 @@ public class MovementAndSensing : MonoBehaviour {
             return false;
     }
 
-    private bool canBeMovedOnto(uint posY, uint posX, int moveY, int moveX)
+    public bool canBeMovedOnto(int posY, int posX, int moveY, int moveX)
     {
         if (map.gridData[posY - moveY, posX - moveY] != TileTypes.Blocked)
             if (posY - moveY > 0 && posY - moveY < 4 && posX - moveX > 0 && posX - moveX < 4)
@@ -288,7 +243,7 @@ public class MovementAndSensing : MonoBehaviour {
             return false;
     }
 
-    private bool sensorReadCorrect(uint posY, uint posX, TileTypes sensor)
+    public bool sensorReadCorrect(int posY, int posX, TileTypes sensor)
     {
         if (map.gridData[posY, posX] == sensor)
             return true;
@@ -296,7 +251,7 @@ public class MovementAndSensing : MonoBehaviour {
             return false;
     }
 
-    private void normalize_probabilities()
+    public void normalize_probabilities()
     {
         float normalize_denominator = 0f;
 
@@ -313,6 +268,23 @@ public class MovementAndSensing : MonoBehaviour {
             }
     }
 
+    public void printState(float[,] state)
+    {
+        //doing a test print of all probabilities:
+        string print = "";
+        float total_val = 0;
+        for (uint i = 1; i < 4; i++)
+        {
+            for (uint j = 1; j < 4; j++)
+            {
+                print += System.Math.Round(state[i, j], 6) + "\t";
+                total_val += state[i, j];
+            }
+            print += "\n";
+        }
+        print += "The total prob = " + total_val + "\n";
+        Debug.Log(print);
 
-	
+    }
+
 }

@@ -11,12 +11,25 @@ namespace Assets.Scripts
         public TileTypes stateType;
         public float stateProbability;
 
+        public List<state> path = new List<state>();
+
         public void updateState(int y, int x, TileTypes type, float prob)
         {
             this.x = x;
             this.y = y;
             this.stateType = type;
             this.stateProbability = prob;
+        }
+
+        public float getProb()
+        {
+            float probability = 1f;
+            foreach(state s in path)
+            {
+                probability *= s.stateProbability;
+            }
+
+            return probability;
         }
     }
 }
