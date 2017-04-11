@@ -17,6 +17,7 @@ public class GridMap{
 	public TileTypes[,] gridData { get; set; }
 	public Node[,] graph { get; set; }
 	public float[,] probabilities;
+    public List<float[,]> states = new List<float[,]>();
 
 
 	//Singleton to make sure only 1 map exists at a time
@@ -92,9 +93,15 @@ public class GridMap{
 
 		gridData = new TileTypes[x_columns, y_rows];
 		probabilities = new float[x_columns, y_rows];
+<<<<<<< HEAD:Project3/AI Project 3/Assets/Scripts/Map/GridMap.cs
 		for (uint i = 0; i < x_columns; i++)
 		{
 			for (uint j = 0; j < y_rows; j++)
+=======
+		for (int i = 1; i < 4; i++)
+		{
+			for (int j = 1; j < 4; j++)
+>>>>>>> origin/master:Project3/AI Project 3/Assets/Scripts/MapGeneration/GridMap.cs
 			{
                 probabilities[i, j] = (1f / 8.0f);
 				if(i == 0 || j == 0)

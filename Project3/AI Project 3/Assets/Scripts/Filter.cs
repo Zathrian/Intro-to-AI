@@ -1,12 +1,14 @@
 ﻿
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class MovementAndSensing : MonoBehaviour {
+public class Filter : MonoBehaviour {
 
     GridMap map = GridMap.Map;
     TileTypes[] movementTiles;
 
+<<<<<<< HEAD:Project3/AI Project 3/Assets/Scripts/MovementAndSensing.cs
 
 
     private void Start()
@@ -32,6 +34,9 @@ public class MovementAndSensing : MonoBehaviour {
 
     }
     public Vector2 Move(Direction direction)
+=======
+    public void Move(Direction direction)
+>>>>>>> origin/master:Project3/AI Project 3/Assets/Scripts/Filter.cs
     {
         /*
 		 * 90% probability to move 
@@ -102,11 +107,11 @@ public class MovementAndSensing : MonoBehaviour {
 
     }
 
-
     public void ExecuteInstruction(Direction dir_instruction, TileTypes read_value)
     {
-        for (uint i = 1; i < 4; i++)
-            for (uint j = 1; j < 4; j++)
+
+        for (int i = 1; i < 4; i++)
+            for (int j = 1; j < 4; j++)
             {
                 // We have our move instruction, our recorded_read and now we must calculate the probabilty at a given tile
 
@@ -140,43 +145,37 @@ public class MovementAndSensing : MonoBehaviour {
                         break;
 
                 }
-
-                // We must normalize the values
-                normalize_probabilities();
-
-
             }
 
-        //doing a test print of all probabilities:
-        string print = "";
-        float total_val = 0;
-        for (uint i = 1; i < 4; i++)
-        {
-            for (uint j = 1; j < 4; j++)
+        float[,] newFloatArray = new float[4, 4];
+        for(int i = 1; i < 4; i++)
+            for(int j = 1; j < 4; j++)
             {
-                print += System.Math.Round(map.probabilities[i, j], 6) + "\t";
-                total_val += map.probabilities[i, j];
+                newFloatArray[i, j] = map.probabilities[i, j];
             }
-            print += "\n";
-        }
-        print += "The total prob = " + total_val + "\n";
-        Debug.Log(print);
+
+        // We must normalize the values
+        normalize_probabilities();
+        Debug.Log("PRINT FROM FILTER");
+        printState(map.probabilities);
+        map.states.Add(map.probabilities);
+
 
 
     }
 
-    private float calculate_probabilities(uint posY, uint posX, int moveX, int moveY, TileTypes read_value)
+    private float calculate_probabilities(int posY, int posX, int moveX, int moveY, TileTypes read_value)
     {
 
         if (map.gridData[posY, posX] == TileTypes.Blocked)
         {
-            Debug.Log("Tile (" + posY + ", " + posX + ") is blocked");
+            // Debug.Log("Tile (" + posY + ", " + posX + ") is blocked");
             return 0f;
         }
 
         else if (moveOutOfBounds(posY, posX, moveY, moveX) || neighborBlocked(posY, posX, moveY, moveX))
         {
-            Debug.Log("Tile (" + posY + ", " + posX + ") is attempting to move out of bounds");
+            // Debug.Log("Tile (" + posY + ", " + posX + ") is attempting to move out of bounds");
             if (canBeMovedOnto(posY, posX, moveY, moveX))
             {
                 if (sensorReadCorrect(posY, posX, read_value))
@@ -196,7 +195,7 @@ public class MovementAndSensing : MonoBehaviour {
 
         else if (canBeMovedOnto(posY, posX, moveY, moveX))
         {
-            Debug.Log("Tile (" + posY + ", " + posX + ") is not moving out of bounds and can be moved onto");
+            // Debug.Log("Tile (" + posY + ", " + posX + ") is not moving out of bounds and can be moved onto");
             if (sensorReadCorrect(posY, posX, read_value))
                 return (0.9f + 0.1f) * 0.9f;
             else
@@ -205,26 +204,16 @@ public class MovementAndSensing : MonoBehaviour {
 
         else
         {
-            Debug.Log("This tile cannot be moved onto and can move off of it");
+            // Debug.Log("Tile (" + posY + ", " + posX + ") cannot be moved onto and can move off of it");
             if (sensorReadCorrect(posY, posX, read_value))
                 return 0.1f * 0.9f;
             else
                 return 0.1f * 0.05f;
         }
 
-        //Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
-
-
-        // Debug.Log("This is (" + posY + ", " + posX + ") with probablity = " + nodeProb + "\n");
-
     }
 
-
-
-
-
-
-    private bool neighborBlocked(uint posY, uint posX, int moveY, int moveX)
+    public bool neighborBlocked(int posY, int posX, int moveY, int moveX)
     {
         try
         {
@@ -239,7 +228,7 @@ public class MovementAndSensing : MonoBehaviour {
         }
     }
 
-    private bool moveOutOfBounds(uint posY, uint posX, int moveY, int moveX)
+    public bool moveOutOfBounds(int posY, int posX, int moveY, int moveX)
     {
         if (posY + moveY > 3 || posY + moveY < 1 || posX + moveX > 3 || posX + moveX < 1)
         {
@@ -250,7 +239,7 @@ public class MovementAndSensing : MonoBehaviour {
             return false;
     }
 
-    private bool canBeMovedOnto(uint posY, uint posX, int moveY, int moveX)
+    public bool canBeMovedOnto(int posY, int posX, int moveY, int moveX)
     {
         if (map.gridData[posY - moveY, posX - moveY] != TileTypes.Blocked)
             if (posY - moveY > 0 && posY - moveY < 4 && posX - moveX > 0 && posX - moveX < 4)
@@ -261,7 +250,7 @@ public class MovementAndSensing : MonoBehaviour {
             return false;
     }
 
-    private bool sensorReadCorrect(uint posY, uint posX, TileTypes sensor)
+    public bool sensorReadCorrect(int posY, int posX, TileTypes sensor)
     {
         if (map.gridData[posY, posX] == sensor)
             return true;
@@ -269,8 +258,7 @@ public class MovementAndSensing : MonoBehaviour {
             return false;
     }
 
-
-    private void normalize_probabilities()
+    public void normalize_probabilities()
     {
         float normalize_denominator = 0f;
 
@@ -287,6 +275,23 @@ public class MovementAndSensing : MonoBehaviour {
             }
     }
 
+    public void printState(float[,] state)
+    {
+        //doing a test print of all probabilities:
+        string print = "";
+        float total_val = 0;
+        for (uint i = 1; i < 4; i++)
+        {
+            for (uint j = 1; j < 4; j++)
+            {
+                print += System.Math.Round(state[i, j], 6) + "\t";
+                total_val += state[i, j];
+            }
+            print += "\n";
+        }
+        print += "The total prob = " + total_val + "\n";
+        Debug.Log(print);
 
-	
+    }
+
 }
