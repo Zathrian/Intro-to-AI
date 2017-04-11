@@ -158,6 +158,7 @@ public class InitializeWorld : MonoBehaviour
 		map.GenerateGraph();
 		InitializeGrid();
 	}
+
 	public void LoadMap()
 	{
 		//Initialize basic grid data
@@ -363,18 +364,38 @@ public class InitializeWorld : MonoBehaviour
 		 * Sensor:	  N N H H
 		 */
 		Filter filter = GetComponent<Filter>();
-		//	read_value = sensor data;
+        //	read_value = sensor data;
+
+        TileTypes t = map.gridData[2, 10];
+        Debug.Log(t.ToString());
+        
 		for (int i = 0; i < 100; i++)
 		{
             // Debug.Log(action.direction + ", " + action.sensedTile.ToString());
-			filter.ExecuteInstruction(map.action[i], map.sensor[i]);
+            filter.ExecuteInstruction(map.action[i], map.sensor[i]);
 		}
+        
+        
+        /*
+        Direction d1 = Direction.Left;
+        Direction d2 = Direction.Right;
+        Direction d3 = Direction.Down;
+        Direction d4 = Direction.Up;
+        TileTypes t1 = TileTypes.Normal;
+        TileTypes t2 = TileTypes.Normal;
+        TileTypes t3 = TileTypes.Highway;
+        TileTypes t4 = TileTypes.Highway;
+        filter.ExecuteInstruction(d1, t1);
+        filter.ExecuteInstruction(d2, t2);
+        filter.ExecuteInstruction(d3, t3);
+        filter.ExecuteInstruction(d4, t4);
+        */
 
-     //   GetComponent<Viterbi>().start();
-		
-	}
+        //   GetComponent<Viterbi>().start();
 
-	void DrawLine(Vector3 start, Vector3 end, Color color)
+    }
+
+    void DrawLine(Vector3 start, Vector3 end, Color color)
 	{
 		GameObject myLine = new GameObject();
 		myLine.transform.position = start;
