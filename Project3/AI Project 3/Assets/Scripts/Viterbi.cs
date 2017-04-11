@@ -12,10 +12,12 @@ namespace Assets.Scripts
         List<instructionPair> instructions = new List<instructionPair> { new instructionPair(Direction.Right, TileTypes.Normal), new instructionPair(Direction.Right, TileTypes.Normal),
             new instructionPair(Direction.Down, TileTypes.Highway), new instructionPair(Direction.Down, TileTypes.Highway) };
 
+        List<Direction> directions;
 
-
-        public void start()
+        public void start(List<Direction> dirs)
         {
+            directions = new List<Direction>(dirs);
+
             startState = new float[map.y_rows, map.x_columns];
             for (int i = 1; i < map.y_rows; i++)
                 for (int j = 1; j < map.x_columns; j++)
@@ -33,14 +35,14 @@ namespace Assets.Scripts
 
             normalizeStates();
 
-            compute();
+            compute(directions);
 
             // we must normalize all of the states
 
 
         }
 
-        void compute()
+        void compute(List<Direction> dirs)
         {
             Filter filter = new Filter();
             List<state> newStates = new List<state>();
@@ -50,20 +52,20 @@ namespace Assets.Scripts
 
 
             int instructionIterator = 0;
-            foreach (instructionPair instruction in instructions)
+            foreach (Direction dir in dirs)
             {
                 Debug.Log("Printing state in viterbi");
                 filter.printState(map.states[instructionIterator]);
                 int moveX = 0;
                 int moveY = 0;
 
-                if (instruction.direction == Direction.Right)
+                if (dir == Direction.Right)
                     moveX = 1;
-                else if (instruction.direction == Direction.Left)
+                else if (dir == Direction.Left)
                     moveX = -1;
-                else if (instruction.direction == Direction.Up)
+                else if (dir == Direction.Up)
                     moveY = -1;
-                else if (instruction.direction == Direction.Down)
+                else if (dir == Direction.Down)
                     moveY = 1;
 
                 // Debug.Log("State change");
@@ -112,9 +114,10 @@ namespace Assets.Scripts
                 }
                 // Clear this temporary data because it has already been added to the master states list.
                 newStates.Clear();
+
+                pruneTree();
                 normalizeStates();
                 normalizeRouteProbabilities();
-
                 instructionIterator++;
                 getOptimalState(States);
             }
@@ -200,6 +203,17 @@ namespace Assets.Scripts
             Debug.Log(path);
 
             return maxState;
+        }
+
+
+        private void pruneTree()
+        {
+            for(int i = 0; i < States.Count; i++)
+            {
+                if (States[i].stateProbability < (10f * (Mathf.Pow(10, -7))))
+                    States.RemoveAt(i);
+            }
+
         }
 
     }

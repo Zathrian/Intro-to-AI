@@ -365,6 +365,7 @@ public class InitializeWorld : MonoBehaviour
 		 */
 
 		Filter filter = GetComponent<Filter>();
+<<<<<<< HEAD
 
         //	read_value = sensor data;
 
@@ -372,6 +373,11 @@ public class InitializeWorld : MonoBehaviour
         Debug.Log(t.ToString());
         
 		for (int i = 0; i < 100; i++)
+=======
+		//	read_value = sensor data;
+		for (int i = 0; i < map.action.Count; i++)
+        
+>>>>>>> c0d087f182a160b9ff623cd72e5a7485625cabc8
 		{
             // Debug.Log(action.direction + ", " + action.sensedTile.ToString());
             filter.ExecuteInstruction(map.action[i], map.sensor[i]);
@@ -393,7 +399,11 @@ public class InitializeWorld : MonoBehaviour
         filter.ExecuteInstruction(d4, t4);
         */
 
+<<<<<<< HEAD
         GetComponent<Viterbi>().start();
+=======
+        GetComponent<Viterbi>().start(map.action);
+>>>>>>> c0d087f182a160b9ff623cd72e5a7485625cabc8
 
 
     }
