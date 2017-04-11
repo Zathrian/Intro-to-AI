@@ -365,17 +365,13 @@ public class InitializeWorld : MonoBehaviour
 		 */
 
 		Filter filter = GetComponent<Filter>();
-<<<<<<< HEAD
-		//	read_value = sensor data;
-		for (int i = 0; i < map.action.Count; i++)
-=======
+
         //	read_value = sensor data;
 
         TileTypes t = map.gridData[2, 10];
         Debug.Log(t.ToString());
         
 		for (int i = 0; i < 100; i++)
->>>>>>> origin/master
 		{
             // Debug.Log(action.direction + ", " + action.sensedTile.ToString());
             filter.ExecuteInstruction(map.action[i], map.sensor[i]);
@@ -397,7 +393,7 @@ public class InitializeWorld : MonoBehaviour
         filter.ExecuteInstruction(d4, t4);
         */
 
-        //   GetComponent<Viterbi>().start();
+           GetComponent<Viterbi>().start();
 
     }
 

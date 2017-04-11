@@ -20,7 +20,7 @@ public class MouseClick : MonoBehaviour {
 			{
 				Vector3 pos = h.collider.transform.parent.transform.position;
 				Node n = map.graph[(int)pos.x, (int)pos.z];
-				Debug.Log("Clicked: " + pos + " " + n.x + " " + n.y);
+				Debug.Log("Clicked: " + pos + " " + n.y + " " + n.x);
 				
 			}
 		}

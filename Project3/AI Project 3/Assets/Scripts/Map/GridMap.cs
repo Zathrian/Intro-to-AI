@@ -120,17 +120,7 @@ public class GridMap{
 
 		gridData = new TileTypes[y_rows, x_columns];
 		probabilities = new float[y_rows, x_columns];
-		for (uint i = 0; i < y_rows; i++)
-		{
-			for (uint j = 0; j < x_columns; j++)
-			{
-                probabilities[i, j] = (float)(1f / ((float)(x_columns*y_rows) - (float)numBlocked()));
-				if(i == 0 || j == 0)
-				{
-					gridData[i, j] = TileTypes.Null;
-				}
-			}
-		}
+		
 	}
 	/// <summary>
 	/// Once the grid map is generated with different tile types, we generate a graph of the map
@@ -148,6 +138,20 @@ public class GridMap{
 				graph[c, r].type = gridData[c, r];
 				graph[c, r].x = c;
 				graph[c, r].y = r;
+			}
+		}
+
+		float num_blocked = numBlocked();
+		Debug.Log("Num Blocked: " + num_blocked + " " + gridData[1, 4] + " " + gridData[4, 1]);
+		for (uint i = 0; i < y_rows; i++)
+		{
+			for (uint j = 0; j < x_columns; j++)
+			{
+				probabilities[i, j] = (float)(1f / ((float)(x_columns * y_rows) - num_blocked));
+				if (i == 0 || j == 0)
+				{
+					gridData[i, j] = TileTypes.Null;
+				}
 			}
 		}
 
