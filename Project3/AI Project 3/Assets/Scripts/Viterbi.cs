@@ -8,7 +8,7 @@ namespace Assets.Scripts
     {
         private GridMap map = GridMap.Map;
         private List<state> States = new List<state>();
-        public float[,] startState = new float[4, 4];
+        public float[,] startState;
         List<instructionPair> instructions = new List<instructionPair> { new instructionPair(Direction.Right, TileTypes.Normal), new instructionPair(Direction.Right, TileTypes.Normal),
             new instructionPair(Direction.Down, TileTypes.Highway), new instructionPair(Direction.Down, TileTypes.Highway) };
 
@@ -16,12 +16,14 @@ namespace Assets.Scripts
 
         public void start()
         {
-            for(int i = 1; i < 4; i++)
-                for(int j = 1; j < 4; j++)
+            startState = new float[map.y_rows, map.x_columns];
+            for(int i = 1; i < map.y_rows; i++)
+                for(int j = 1; j < map.x_columns; j++)
                 {
                     // We start with these probabilities
-                    startState[i, j] = (1f / 8f);
+                    startState[i, j] = (1f / (map.x_columns*map.y_rows - map.numBlocked()));
 
+                    // Debug.LogWarning("Value -= " + startState[i, j]);
                     // Create a new state here
                     state state = new state();
                     state.updateState(i, j, map.gridData[i, j], startState[i, j]);
@@ -30,6 +32,7 @@ namespace Assets.Scripts
                 }
    
             normalizeStates();
+
             compute();
 
             // we must normalize all of the states
@@ -42,9 +45,15 @@ namespace Assets.Scripts
             Filter filter = new Filter();
             List<state> newStates = new List<state>();
 
+
+            
+
+
             int instructionIterator = 0;
             foreach (instructionPair instruction in instructions)
             {
+                Debug.Log("Printing state in viterbi");
+                filter.printState(map.states[instructionIterator]);
                 int moveX = 0;
                 int moveY = 0;
 
@@ -65,29 +74,33 @@ namespace Assets.Scripts
                     {
                         // Debug.LogWarning("The prob at this state is: " + map.states[instructionIterator][s.y, s.x]);
                         // This state isnt going anywhere
-                        s.updateState(s.y, s.x, s.stateType, map.states[instructionIterator][s.y, s.x]*s.getProb());
+                        s.updateState(s.y, s.x, s.stateType, map.states[instructionIterator][s.y, s.x]*s.stateProbability);
                         s.path.Add(s);
                     }
 
                     else
                     {
 
-                        // This state can either expand to the right or stay where it is
+                        // This state can either expand to the direction specified or stay where it is
 
                         // Debug.LogWarning("The prob at this moveable state is: " + map.states[instructionIterator][s.y, s.x]);
 
                         state newState = new state();
-                        newState.updateState(s.y, s.x, map.gridData[s.y, s.x], map.states[instructionIterator][s.y, s.x]*s.getProb());
+                        newState.updateState(s.y, s.x, map.gridData[s.y, s.x], map.states[instructionIterator][s.y, s.x]*s.stateProbability);
                         for (int i = 0; i < s.path.Count; i++)
                             newState.path.Add(s.path[i]);
 
+                        // Debug.LogWarning("Prob New = " + newState.stateProbability);
+
                         newState.path.Add(newState);
                         newStates.Add(newState);
+
+                        // Debug.LogWarning("Prob Old = " + map.states[instructionIterator][s.y + moveY, s.x + moveX]);
+                        s.updateState(s.y + moveY, s.x + moveX, map.gridData[s.y + moveY, s.x + moveX], map.states[instructionIterator][s.y + moveY, s.x + moveX]*s.stateProbability);
+                        s.path.Add(s);
+
                         
 
-                        s.updateState(s.y + moveY, s.x + moveX, map.gridData[s.y + moveY, s.x + moveX], map.states[instructionIterator][s.y + moveY, s.x + moveX]*s.getProb());
-                        s.path.Add(s);
- 
                     }
 
                 }
@@ -99,15 +112,13 @@ namespace Assets.Scripts
                 }
                 // Clear this temporary data because it has already been added to the master states list.
                 newStates.Clear();
-
                 normalizeStates();
+                normalizeRouteProbabilities();
 
                 instructionIterator++;
                 getOptimalState(States);
             }
         }
-
-
 
         class instructionPair
         {
@@ -127,6 +138,7 @@ namespace Assets.Scripts
             float normalizeFactor = 0;
             for(int i = 0; i < States.Count; i++)
             {
+                // Debug.LogWarning("Prob = " + States[i].stateProbability);
                 normalizeFactor += States[i].stateProbability;
             }
 
@@ -136,10 +148,24 @@ namespace Assets.Scripts
             }
         }
 
+        private void normalizeRouteProbabilities()
+        {
+            float normalizeValue = 0;
+            for(int i = 0; i < States.Count; i++)
+            {
+                States[i].routeProbability = States[i].getProb();
+                normalizeValue += States[i].getProb();
+            }
+
+            for(int i = 0; i < States.Count; i++)
+            {
+                States[i].routeProbability = States[i].routeProbability / normalizeValue;
+            }
+        }
 
         private state getOptimalState(List<state> states)
         {
-            Debug.Log("The total number of states is: " + States.Count);
+            // Debug.Log("The total number of states is: " + States.Count);
             state maxState = new state();
             for (int i = 0; i < States.Count; i++)
             {
@@ -153,9 +179,9 @@ namespace Assets.Scripts
 
                 else
                 {
-                    if (States[i].getProb() > maxState.getProb())
+                    if (States[i].routeProbability > maxState.routeProbability)
                     {
-                        if (States[i].getProb() == maxState.getProb())
+                        if (States[i].routeProbability == maxState.routeProbability)
                             Debug.Log("THERE ARE MULTIPLE BEST PATHS");
                         // Debug.Log("Current state prob = " + States[i].getProb() + " MaxState prob = " + maxState.getProb());
                         maxState = States[i];
@@ -165,7 +191,7 @@ namespace Assets.Scripts
                 }
             }
 
-            Debug.Log("Prob of this path is  : " + maxState.getProb());
+            Debug.Log("Prob of this path is  : " + maxState.routeProbability);
             string path = "";
             for (int i = 0; i < maxState.path.Count; i++)
             {
