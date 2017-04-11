@@ -31,7 +31,7 @@ public class Filter : MonoBehaviour
 
 
     }
-    public Vector2 Move(Direction direction)
+    public void Move(Direction direction)
 
     {
         /*
@@ -63,15 +63,14 @@ public class Filter : MonoBehaviour
                     break;
             }
             bool allowMovement = !(moveOutOfBounds(map.agent_y, map.agent_x, moveY, moveX) || map.gridData[map.agent_y, map.agent_x] == TileTypes.Blocked);
-            if (allowMovement)
-                return new Vector2(map.agent_x + moveX, map.agent_y + moveY);
-            else
-                return new Vector2(map.agent_x, map.agent_y);
+			if (allowMovement)
+			{
+				Debug.Log("In move: " + allowMovement + " " + map.agent_y + " " + map.agent_x);
+				map.agent_x += moveX; map.agent_y += moveY;
+			}
+				
+
         }// end movement
-        else
-        {
-            return new Vector2(map.agent_x, map.agent_y);
-        }
     }
 
     private void Sense()
