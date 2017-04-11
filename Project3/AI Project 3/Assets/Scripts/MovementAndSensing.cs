@@ -128,7 +128,7 @@ public class MovementAndSensing : MonoBehaviour {
     {
 
 
-        float[,] probabilities = new float[3, 3];
+        float[,] probabilities = new float[4, 4];
         for (uint i = 1; i < 4; i++)
         {
             for (uint j = 1; j < 4; j++)
