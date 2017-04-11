@@ -63,6 +63,7 @@ namespace Assets.Scripts
         {
             Filter filter = new Filter();
 
+            Debug.Log("PRINT FROM VITERBI");
             for (int i = 0; i < map.states.Count; i++)
                 filter.printState(map.states[i]);
 
