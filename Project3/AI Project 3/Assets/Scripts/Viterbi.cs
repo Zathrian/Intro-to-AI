@@ -17,11 +17,11 @@ namespace Assets.Scripts
         public void start()
         {
             startState = new float[map.y_rows, map.x_columns];
-            for(int i = 1; i < map.y_rows; i++)
-                for(int j = 1; j < map.x_columns; j++)
+            for (int i = 1; i < map.y_rows; i++)
+                for (int j = 1; j < map.x_columns; j++)
                 {
                     // We start with these probabilities
-                    startState[i, j] = (1f / (map.x_columns*map.y_rows - map.numBlocked()));
+                    startState[i, j] = (1f / (map.x_columns * map.y_rows - map.numBlocked()));
 
                     // Debug.LogWarning("Value -= " + startState[i, j]);
                     // Create a new state here
@@ -30,7 +30,7 @@ namespace Assets.Scripts
                     state.path.Add(state);
                     States.Add(state);
                 }
-   
+
             normalizeStates();
 
             compute();
@@ -46,7 +46,7 @@ namespace Assets.Scripts
             List<state> newStates = new List<state>();
 
 
-            
+
 
 
             int instructionIterator = 0;
@@ -74,7 +74,7 @@ namespace Assets.Scripts
                     {
                         // Debug.LogWarning("The prob at this state is: " + map.states[instructionIterator][s.y, s.x]);
                         // This state isnt going anywhere
-                        s.updateState(s.y, s.x, s.stateType, map.states[instructionIterator][s.y, s.x]*s.stateProbability);
+                        s.updateState(s.y, s.x, s.stateType, map.states[instructionIterator][s.y, s.x] * s.stateProbability);
                         s.path.Add(s);
                     }
 
@@ -86,7 +86,7 @@ namespace Assets.Scripts
                         // Debug.LogWarning("The prob at this moveable state is: " + map.states[instructionIterator][s.y, s.x]);
 
                         state newState = new state();
-                        newState.updateState(s.y, s.x, map.gridData[s.y, s.x], map.states[instructionIterator][s.y, s.x]*s.stateProbability);
+                        newState.updateState(s.y, s.x, map.gridData[s.y, s.x], map.states[instructionIterator][s.y, s.x] * s.stateProbability);
                         for (int i = 0; i < s.path.Count; i++)
                             newState.path.Add(s.path[i]);
 
@@ -96,10 +96,10 @@ namespace Assets.Scripts
                         newStates.Add(newState);
 
                         // Debug.LogWarning("Prob Old = " + map.states[instructionIterator][s.y + moveY, s.x + moveX]);
-                        s.updateState(s.y + moveY, s.x + moveX, map.gridData[s.y + moveY, s.x + moveX], map.states[instructionIterator][s.y + moveY, s.x + moveX]*s.stateProbability);
+                        s.updateState(s.y + moveY, s.x + moveX, map.gridData[s.y + moveY, s.x + moveX], map.states[instructionIterator][s.y + moveY, s.x + moveX] * s.stateProbability);
                         s.path.Add(s);
 
-                        
+
 
                     }
 
@@ -136,13 +136,13 @@ namespace Assets.Scripts
         private void normalizeStates()
         {
             float normalizeFactor = 0;
-            for(int i = 0; i < States.Count; i++)
+            for (int i = 0; i < States.Count; i++)
             {
                 // Debug.LogWarning("Prob = " + States[i].stateProbability);
                 normalizeFactor += States[i].stateProbability;
             }
 
-            for(int i = 0; i < States.Count; i++)
+            for (int i = 0; i < States.Count; i++)
             {
                 States[i].stateProbability = (States[i].stateProbability / normalizeFactor);
             }
@@ -151,13 +151,13 @@ namespace Assets.Scripts
         private void normalizeRouteProbabilities()
         {
             float normalizeValue = 0;
-            for(int i = 0; i < States.Count; i++)
+            for (int i = 0; i < States.Count; i++)
             {
                 States[i].routeProbability = States[i].getProb();
                 normalizeValue += States[i].getProb();
             }
 
-            for(int i = 0; i < States.Count; i++)
+            for (int i = 0; i < States.Count; i++)
             {
                 States[i].routeProbability = States[i].routeProbability / normalizeValue;
             }
