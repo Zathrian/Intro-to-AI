@@ -391,7 +391,7 @@ public class InitializeWorld : MonoBehaviour
         filter.ExecuteInstruction(d4, t4);
         */
 
-        //   GetComponent<Viterbi>().start();
+        GetComponent<Viterbi>().start();
 
     }
 
