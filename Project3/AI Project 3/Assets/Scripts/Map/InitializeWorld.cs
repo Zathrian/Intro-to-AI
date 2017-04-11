@@ -363,28 +363,20 @@ public class InitializeWorld : MonoBehaviour
 		 * Direction: Right Right Down Down
 		 * Sensor:	  N N H H
 		 */
-
 		Filter filter = GetComponent<Filter>();
-<<<<<<< HEAD
+		TileTypes t = map.gridData[2, 10];
+		Debug.Log(t.ToString());
 
-        //	read_value = sensor data;
-
-        TileTypes t = map.gridData[2, 10];
-        Debug.Log(t.ToString());
-        
 		for (int i = 0; i < 100; i++)
-=======
-		//	read_value = sensor data;
-		for (int i = 0; i < map.action.Count; i++)
-        
->>>>>>> c0d087f182a160b9ff623cd72e5a7485625cabc8
 		{
-            // Debug.Log(action.direction + ", " + action.sensedTile.ToString());
-            filter.ExecuteInstruction(map.action[i], map.sensor[i]);
+			// Debug.Log(action.direction + ", " + action.sensedTile.ToString());
+			filter.ExecuteInstruction(map.action[i], map.sensor[i]);
 		}
-        
-        
-        /*
+		GetComponent<Viterbi>().start(map.action);
+
+
+
+		/*
         Direction d1 = Direction.Left;
         Direction d2 = Direction.Right;
         Direction d3 = Direction.Down;
@@ -399,16 +391,21 @@ public class InitializeWorld : MonoBehaviour
         filter.ExecuteInstruction(d4, t4);
         */
 
-<<<<<<< HEAD
-        GetComponent<Viterbi>().start();
-=======
-        GetComponent<Viterbi>().start(map.action);
->>>>>>> c0d087f182a160b9ff623cd72e5a7485625cabc8
 
 
-    }
 
-    void DrawLine(Vector3 start, Vector3 end, Color color)
+	}
+
+	void StartMovement()
+	{
+		
+
+
+		//	read_value = sensor data;
+
+		
+	}
+	void DrawLine(Vector3 start, Vector3 end, Color color)
 	{
 		GameObject myLine = new GameObject();
 		myLine.transform.position = start;

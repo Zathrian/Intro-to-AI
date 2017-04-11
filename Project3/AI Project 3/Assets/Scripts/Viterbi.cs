@@ -16,7 +16,7 @@ namespace Assets.Scripts
 
         public void start(List<Direction> dirs)
         {
-            directions = new List<Direction>(dirs);
+            directions = dirs;
 
             startState = new float[map.y_rows, map.x_columns];
             for (int i = 1; i < map.y_rows; i++)
@@ -35,14 +35,14 @@ namespace Assets.Scripts
 
             normalizeStates();
 
-            compute(directions);
-
+			// compute(directions);
+			StartCoroutine("compute");
             // we must normalize all of the states
 
 
         }
 
-        void compute(List<Direction> dirs)
+		IEnumerator compute()
         {
             Filter filter = new Filter();
             List<state> newStates = new List<state>();
@@ -52,10 +52,11 @@ namespace Assets.Scripts
 
 
             int instructionIterator = 0;
-            foreach (Direction dir in dirs)
+            foreach (Direction dir in directions)
             {
-                Debug.Log("Printing state in viterbi");
-                filter.printState(map.states[instructionIterator]);
+				Debug.Log("Instruction Iterator: " + instructionIterator + " States Count: " + States.Count);
+				yield return null;
+				filter.printState(map.states[instructionIterator]);
                 int moveX = 0;
                 int moveY = 0;
 
