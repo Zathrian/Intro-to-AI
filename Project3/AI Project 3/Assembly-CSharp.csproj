@@ -49,17 +49,14 @@
      <Compile Include="Assets\Scripts\Camera\CameraDrag.cs" />
      <Compile Include="Assets\Scripts\Camera\MouseClick.cs" />
      <Compile Include="Assets\Scripts\Filter.cs" />
-     <Compile Include="Assets\Scripts\MapGeneration\GridMap.cs" />
-     <Compile Include="Assets\Scripts\MapGeneration\InitializeWorld.cs" />
-     <Compile Include="Assets\Scripts\MapGeneration\Node.cs" />
+     <Compile Include="Assets\Scripts\Map\GridMap.cs" />
+     <Compile Include="Assets\Scripts\Map\InitializeWorld.cs" />
+     <Compile Include="Assets\Scripts\Map\Node.cs" />
      <Compile Include="Assets\Scripts\Viterbi.cs" />
      <Compile Include="Assets\Scripts\state.cs" />
      <None Include="Assets\Standard Assets\Environment\Water\Water\Shaders\FXWaterPro.shader" />
  <Reference Include="Assembly-UnityScript-firstpass">
  <HintPath>C:/Users/Daniel/OneDrive/Spring 2017/Intro-to-AI/Intro-to-AI/Project3/AI Project 3/Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Advertisements">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
@@ -75,9 +72,6 @@
  </Reference>
  <Reference Include="UnityEngine.HoloLens">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Purchasing">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.VR">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
