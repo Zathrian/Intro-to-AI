@@ -72,7 +72,7 @@ namespace Assets.Scripts
                     else
                     {
 
-                        // This state can either expand to the right or stay where it is
+                        // This state can either expand to the direction specified or stay where it is
 
                         // Debug.LogWarning("The prob at this moveable state is: " + map.states[instructionIterator][s.y, s.x]);
 
@@ -99,7 +99,7 @@ namespace Assets.Scripts
                 }
                 // Clear this temporary data because it has already been added to the master states list.
                 newStates.Clear();
-
+                normalizeRouteProbabilities();
                 normalizeStates();
 
                 instructionIterator++;
@@ -136,6 +136,20 @@ namespace Assets.Scripts
             }
         }
 
+        private void normalizeRouteProbabilities()
+        {
+            float normalizeValue = 0;
+            for(int i = 0; i < States.Count; i++)
+            {
+                States[i].routeProbability = States[i].getProb();
+                normalizeValue += States[i].getProb();
+            }
+
+            for(int i = 0; i < States.Count; i++)
+            {
+                States[i].routeProbability = States[i].routeProbability / normalizeValue;
+            }
+        }
 
         private state getOptimalState(List<state> states)
         {
@@ -153,9 +167,9 @@ namespace Assets.Scripts
 
                 else
                 {
-                    if (States[i].getProb() > maxState.getProb())
+                    if (States[i].routeProbability > maxState.routeProbability)
                     {
-                        if (States[i].getProb() == maxState.getProb())
+                        if (States[i].routeProbability == maxState.routeProbability)
                             Debug.Log("THERE ARE MULTIPLE BEST PATHS");
                         // Debug.Log("Current state prob = " + States[i].getProb() + " MaxState prob = " + maxState.getProb());
                         maxState = States[i];
@@ -165,7 +179,7 @@ namespace Assets.Scripts
                 }
             }
 
-            Debug.Log("Prob of this path is  : " + maxState.getProb());
+            Debug.Log("Prob of this path is  : " + maxState.routeProbability);
             string path = "";
             for (int i = 0; i < maxState.path.Count; i++)
             {

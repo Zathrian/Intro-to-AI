@@ -13,6 +13,8 @@ namespace Assets.Scripts
 
         public List<state> path = new List<state>();
 
+        public float routeProbability;
+
         public void updateState(int y, int x, TileTypes type, float prob)
         {
             this.x = x;
