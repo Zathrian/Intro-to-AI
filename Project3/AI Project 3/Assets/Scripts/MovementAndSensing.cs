@@ -31,67 +31,46 @@ public class MovementAndSensing : MonoBehaviour {
 
 
     }
-    public void Move(Direction direction)
+    public Vector2 Move(Direction direction)
     {
         /*
 		 * 90% probability to move 
 		 * 10% to fail and stay
 		 */
-
+			
         if (Random.Range(1, 11) < 10)
         {
-            // Movement roll successfull
-            bool allowMovement = map.gridData[map.agent_x, map.agent_y] != TileTypes.Blocked;
+			int moveY = 0; ;
+			int moveX = 0; ;
             switch (direction)
             {
                 case Direction.Up:
-                    if (map.agent_y == map.y_rows - 1)
-                    {
-                        //At the edge of the map so do nothing
-                    }
-                    else if (allowMovement)
-                    {
-                        map.agent_y++;
-                    }
+						moveY = -1;
+						moveX = 0;
                     break;
                 case Direction.Down:
-                    if (map.agent_y == 0)
-                    {
-                        //At the edge of the map so do nothing
-                    }
-                    else if (allowMovement)
-                    {
-                        map.agent_y--;
-                    }
+						moveY = 1;
+						moveX = 0;				
                     break;
                 case Direction.Left:
-                    if (map.agent_x == 0)
-                    {
-                        //At the edge of the map so do nothing
-                    }
-                    else if (allowMovement)
-                    {
-                        map.agent_x--;
-                    }
+						moveY = 0;
+						moveX = -1;				
                     break;
                 case Direction.Right:
-                    if (map.agent_x == map.agent_x - 1)
-                    {
-                        //At the edge of the map so do nothing
-                    }
-                    else if (allowMovement)
-                    {
-                        map.agent_x++;
-                    }
-                    break;
+						moveY = 0;
+						moveX = 1;					
+                   break;
             }
-        }// end movement
-        else
-        {
-            //movement failed, do nothing
-        }
-        //	After we move, we sense where we are;
-        Sense();
+			bool allowMovement =!(moveOutOfBounds((uint)map.agent_y,(uint) map.agent_x, moveY, moveX) || map.gridData[map.agent_y, map.agent_x] == TileTypes.Blocked);
+			if (allowMovement)
+				return new Vector2(map.agent_x + moveX, map.agent_y + moveY);
+			else
+				return new Vector2(map.agent_x, map.agent_y);
+		}// end movement
+		else
+		{
+			return new Vector2(map.agent_x, map.agent_y);
+		}
     }
 
     private void Sense()
@@ -102,12 +81,12 @@ public class MovementAndSensing : MonoBehaviour {
 
         if (Random.Range(1, 11) < 10)
         {
-            map.currentTile = map.gridData[map.x_columns, map.y_rows];
+            map.currentTile = map.gridData[map.agent_y, map.agent_x];
         }
         else
         {
-            // 50% chance for the other 2 tile types to be returned
-            TileTypes correctTile = map.gridData[map.x_columns, map.y_rows];
+            // other 2 tiles are returned with equal proability
+            TileTypes correctTile = map.gridData[map.agent_y, map.agent_x];
         Roll:
             int roll = Random.Range(0, 3);
             if (movementTiles[roll] != correctTile)

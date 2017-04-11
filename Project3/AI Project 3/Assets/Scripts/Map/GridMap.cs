@@ -43,17 +43,19 @@ public class GridMap{
         switch(tile)
         {
             case TileTypes.Blocked:
-                ret = "0";
+                ret = "B";
                 break;
             case TileTypes.Normal:
-                ret = "1";
+                ret = "N";
                 break;
             case TileTypes.Hard:
-                ret = "2";
+                ret = "T";
                 break;
             case TileTypes.Highway:
-                ret = "a";
+                ret = "H";
                 break;
+			default:
+				return "O";
         }
         return ret;
     }//end TileToString
@@ -64,18 +66,21 @@ public class GridMap{
         TileTypes ret = TileTypes.Normal;
         switch (tile)
         {
-            case "0":
+            case "B":
                 ret = TileTypes.Blocked;
                 break;
-            case "1":
+            case "N":
                 ret = TileTypes.Normal;
                 break;
-            case "2":
+            case "T":
                 ret = TileTypes.Hard;
                 break;
-            case "a":
+            case "H":
                 ret = TileTypes.Highway;
                 break;
+			case "O":
+				ret = TileTypes.Null;
+				break;
         }
         return ret;
     }
@@ -87,11 +92,15 @@ public class GridMap{
 
 		gridData = new TileTypes[x_columns, y_rows];
 		probabilities = new float[x_columns, y_rows];
-		for (uint i = 1; i < 4; i++)
+		for (uint i = 0; i < x_columns; i++)
 		{
-			for (uint j = 1; j < 4; j++)
+			for (uint j = 0; j < y_rows; j++)
 			{
                 probabilities[i, j] = (1f / 8.0f);
+				if(i == 0 || j == 0)
+				{
+					gridData[i, j] = TileTypes.Null;
+				}
 			}
 		}
 	}
@@ -124,7 +133,8 @@ public enum TileTypes
     Normal,
 	Hard,
 	Blocked,
-	Highway
+	Highway,
+	Null
 }
 
 public enum Direction

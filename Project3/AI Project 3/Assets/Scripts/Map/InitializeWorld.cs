@@ -18,7 +18,7 @@ public class InitializeWorld : MonoBehaviour
 	public GameObject spotlight;
 
 	GridMap map = GridMap.Map;
-
+	Direction[] movementArray;
 
 	private void Update()
 	{
@@ -43,6 +43,11 @@ public class InitializeWorld : MonoBehaviour
 	public void Start()
 	{
 		//Cursor.visible = false;
+		movementArray = new Direction[4];
+		movementArray[0] = Direction.Down;
+		movementArray[0] = Direction.Left;
+		movementArray[0] = Direction.Up;
+		movementArray[0] = Direction.Right;
 	}
 	public void GenerateRandom()
 	{
@@ -56,11 +61,66 @@ public class InitializeWorld : MonoBehaviour
 		map.x_columns = this.x_columns;
 		map.Init();
 
-	//	GenerateMap randomMap = new GenerateMap();
-	//	randomMap.GenerateRandomMap();
+		// 50% Normal Tiles, 20% highway, 20% Hard, 10% Blocked
+		int Num_hard_and_highway_cells = Mathf.RoundToInt(((map.y_rows-1) * (map.x_columns-1)) * 0.2f);
+		int NumBlocked = Mathf.RoundToInt(((map.y_rows - 1) * (map.x_columns - 1)) * 0.1f);
+
+
+		//	Debug.Log((((map.y_rows - 1) * (map.x_columns - 1)) * 0.2));
+		//Debug.Log(NumBlocked);
+		for (int i = 0; i < Num_hard_and_highway_cells; i++)
+		{
+			RollHard:
+			Vector2 coord = GenerateRandomCoordinate(map.y_rows, map.x_columns);
+			if( map.gridData[(int)coord.y, (int)coord.x] == TileTypes.Normal)
+			{
+				map.gridData[(int)coord.y, (int)coord.x] = TileTypes.Hard;
+			}
+			else
+			{
+				goto RollHard;
+			}
+		}
+
+		for (int i = 0; i < Num_hard_and_highway_cells; i++)
+		{
+			RollHighway:
+			Vector2 coord = GenerateRandomCoordinate(map.y_rows, map.x_columns);
+			if (map.gridData[(int)coord.y, (int)coord.x] == TileTypes.Normal)
+			{
+				map.gridData[(int)coord.y, (int)coord.x] = TileTypes.Highway;
+			}
+			else
+			{
+				goto RollHighway;
+			}
+		}
+
+		for (int i = 0; i < NumBlocked; i++)
+		{
+			RollBlocked:
+			Vector2 coord = GenerateRandomCoordinate(map.y_rows, map.x_columns);
+			if (map.gridData[(int)coord.y, (int)coord.x] == TileTypes.Normal)
+			{
+				map.gridData[(int)coord.y, (int)coord.x] = TileTypes.Blocked;
+			}
+			else
+			{
+				goto RollBlocked;
+			}
+		}
+
 		map.GenerateGraph();
 		Debug.Log("Finished Grid Initialization");
 		InitializeGrid();
+	}
+
+	Vector2 GenerateRandomCoordinate(int rows, int columns)
+	{
+		int x = Random.Range(1, columns);
+		int y = Random.Range(1, rows);
+
+		return new Vector2(x, y);
 	}
 
 	public void GenerateForQuestionA()
@@ -105,34 +165,15 @@ public class InitializeWorld : MonoBehaviour
 		map.BlockedTile = this.LavaTile;
 		map.y_rows = this.y_rows;
 		map.x_columns = this.x_columns;
-
+		map.Init();
 		var path = EditorUtility.OpenFilePanel("Choose map file", "", "dat");
-		/*
-	   * Load the map data from a dat file and populate the necessary fields of the GridMap class
-	   * The file is written in the following format: 
-	   * -> co-ordinate of start
-	   * -> co-ordinate of goal
-	   * -> 8 co-ordinates of snow zones. 1 per line
-	   * -> Type of terrain of the map. 120 rows with 160 characters each.
-	   * 
-	   * We seperate x and y cordinates using a space
-	   * Remember, X and Y co-ordinates in real time translate to X and Z co-ordinates for unity
-	   *
-	   */
+
 
 		string[] buffer = System.IO.File.ReadAllLines(path);
 
-		// Load the start and goal co-ordinates
-		string[] coord = buffer[0].Split(' ');
-		Vector2 start = new Vector2(int.Parse(coord[0]), int.Parse(coord[1]));
-		//target location
-		coord = buffer[1].Split(' ');
-		Vector2 goal = new Vector2(int.Parse(coord[0]), int.Parse(coord[1]));
-		Debug.Log("Printing end vector: " + coord[0] + " " + coord[1]);
-		//Load the 8 snow zones
 		int rowIdx = 0;
 		// Time to load the actual grid data
-		for (int i = 10; i < map.y_rows + 10; i++)
+		for (int i = 0; i < map.y_rows; i++)
 		{
 			char[] columnInfo = new char[map.x_columns];
 			System.IO.StringReader readString = new System.IO.StringReader(buffer[i]);
@@ -143,7 +184,7 @@ public class InitializeWorld : MonoBehaviour
 
 				try
 				{
-					map.gridData[colIdx, rowIdx] = map.StringToTile(columnInfo[colIdx].ToString());
+					map.gridData[rowIdx, colIdx] = map.StringToTile(columnInfo[colIdx].ToString());
 				}
 				catch (System.IndexOutOfRangeException e)
 				{
@@ -158,38 +199,50 @@ public class InitializeWorld : MonoBehaviour
 		// We loaded all the data, time to Instantiate the grid on the world map
 		map.GenerateGraph();
 		InitializeGrid();
-		map.start = GameObject.Find("Tile_" + start.x + "_" + start.y);
-		GameObject.Find("Start").transform.position = map.start.transform.position;
 	}
 
-	public void SaveMap()
+	public void SaveMap(int ground_truth_index)
 	{
-
+		/*
+		 * Save the map in a map file
+		 * Save 10 sets of 100 random actions performed by an agent and the observations along with start position
+		 */
+		MovementAndSensing sense = new MovementAndSensing();
 		var path = EditorUtility.SaveFilePanel("Select file name and location", "", "test", "dat");
 		// Get all the grid map data and write it to a valid map file
 		// We will assume, for ease, that the output file will be in the home directory of the program
 
 		List<string> buffer = new List<string>();
 
-		/* We are required to add the following data in the following order:
-         * -> co-ordinate of start
-         * -> co-ordinate of goal
-         * -> 8 co-ordinates of snow zones. 1 per line
-         * -> Type of terrain of the map. 120 rows with 160 characters each.
-         * 
-         * We seperate x and y cordinates using a space
-         * Remember, X and Y co-ordinates in real time translate to X and Z co-ordinates for unity
-         */
-		//Add start and goal positions
-		buffer.Add(map.start.transform.position.x + " " + map.start.transform.position.z);
+		for(int i =0; i<10; i++)
+		{
+			var ground_action_file_path = path + "_ground_data_" + i + ".dat";
+		check:
+			Vector2 start = GenerateRandomCoordinate(map.y_rows, map.x_columns);
+			if (map.gridData[(int)start.y, (int)start.x] == TileTypes.Blocked)
+				goto check;
+			map.agent_y = (int)start.y;
+			map.agent_x = (int)start.x;
+			string action_string = "";
+			string movement_string = "";
+			string sense_string = "";
+			for(int j = 0; j<100; j++)
+			{
+				Direction action = movementArray[Random.Range(0, 4)];
+				Vector2 move_coord = sense.Move(action);
+				action_string += action;
+				movement_string += move_coord.y + " " + move_coord.x + "\n";
+				sense_string = map.TileToString(map.currentTile);
+			}
+		}
 
 		// Time to enter terrain data in form of strings
 		string row = "";
-		for (int r = 1; r < map.y_rows; r++)
+		for (int r = 0; r < map.y_rows; r++)
 		{
-			for (int c = 1; c < map.x_columns; c++)
+			for (int c = 0; c < map.x_columns; c++)
 			{
-				row += map.TileToString(map.gridData[c, r]);
+				row += map.TileToString(map.gridData[r, c]);
 			}
 			buffer.Add(row);
 			row = "";

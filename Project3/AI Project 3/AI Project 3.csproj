@@ -89,9 +89,9 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Camera\CameraDrag.cs" />
     <Compile Include="Assets\Scripts\Camera\MouseClick.cs" />
-    <Compile Include="Assets\Scripts\MapGeneration\GridMap.cs" />
-    <Compile Include="Assets\Scripts\MapGeneration\InitializeWorld.cs" />
-    <Compile Include="Assets\Scripts\MapGeneration\Node.cs" />
+    <Compile Include="Assets\Scripts\Map\GridMap.cs" />
+    <Compile Include="Assets\Scripts\Map\InitializeWorld.cs" />
+    <Compile Include="Assets\Scripts\Map\Node.cs" />
     <Compile Include="Assets\Scripts\MovementAndSensing.cs" />
   </ItemGroup>
   <ItemGroup>
