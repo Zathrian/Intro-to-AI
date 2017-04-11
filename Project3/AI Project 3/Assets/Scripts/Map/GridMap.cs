@@ -142,7 +142,7 @@ public class GridMap{
 		}
 
 		float num_blocked = numBlocked();
-		Debug.Log("Num Blocked: " + num_blocked + " " + gridData[1, 4] + " " + gridData[4, 1]);
+		
 		for (uint i = 0; i < y_rows; i++)
 		{
 			for (uint j = 0; j < x_columns; j++)

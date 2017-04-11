@@ -211,7 +211,7 @@ namespace Assets.Scripts
         {
             for(int i = 0; i < States.Count; i++)
             {
-                if (States[i].stateProbability < (10f * (Mathf.Pow(10, -7))))
+                if (States[i].stateProbability < (10f * (Mathf.Pow(10, -21))))
                     States.RemoveAt(i);
             }
 
