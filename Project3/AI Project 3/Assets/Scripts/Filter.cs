@@ -8,9 +8,6 @@ public class Filter : MonoBehaviour {
     GridMap map = GridMap.Map;
     TileTypes[] movementTiles;
 
-<<<<<<< HEAD:Project3/AI Project 3/Assets/Scripts/MovementAndSensing.cs
-
-
     private void Start()
     {
         movementTiles = new TileTypes[3];
@@ -34,9 +31,7 @@ public class Filter : MonoBehaviour {
 
     }
     public Vector2 Move(Direction direction)
-=======
-    public void Move(Direction direction)
->>>>>>> origin/master:Project3/AI Project 3/Assets/Scripts/Filter.cs
+
     {
         /*
 		 * 90% probability to move 
@@ -66,7 +61,7 @@ public class Filter : MonoBehaviour {
 						moveX = 1;					
                    break;
             }
-			bool allowMovement =!(moveOutOfBounds((uint)map.agent_y,(uint) map.agent_x, moveY, moveX) || map.gridData[map.agent_y, map.agent_x] == TileTypes.Blocked);
+			bool allowMovement =!(moveOutOfBounds(map.agent_y, map.agent_x, moveY, moveX) || map.gridData[map.agent_y, map.agent_x] == TileTypes.Blocked);
 			if (allowMovement)
 				return new Vector2(map.agent_x + moveX, map.agent_y + moveY);
 			else

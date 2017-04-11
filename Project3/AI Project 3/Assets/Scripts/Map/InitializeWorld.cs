@@ -208,7 +208,7 @@ public class InitializeWorld : MonoBehaviour
 		 * Save the map in a map file
 		 * Save 10 sets of 100 random actions performed by an agent and the observations along with start position
 		 */
-		MovementAndSensing sense = new MovementAndSensing();
+		Filter sense = new Filter();
 		var path = EditorUtility.SaveFilePanel("Select file name and location", "", "test", "dat");
 		// Get all the grid map data and write it to a valid map file
 		// We will assume, for ease, that the output file will be in the home directory of the program

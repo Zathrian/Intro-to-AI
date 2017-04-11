@@ -89,10 +89,12 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Camera\CameraDrag.cs" />
     <Compile Include="Assets\Scripts\Camera\MouseClick.cs" />
+    <Compile Include="Assets\Scripts\Filter.cs" />
     <Compile Include="Assets\Scripts\Map\GridMap.cs" />
     <Compile Include="Assets\Scripts\Map\InitializeWorld.cs" />
     <Compile Include="Assets\Scripts\Map\Node.cs" />
-    <Compile Include="Assets\Scripts\MovementAndSensing.cs" />
+    <Compile Include="Assets\Scripts\Viterbi.cs" />
+    <Compile Include="Assets\Scripts\state.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Standard Assets\Environment\Water\Water\Shaders\FXWaterPro.shader" />
