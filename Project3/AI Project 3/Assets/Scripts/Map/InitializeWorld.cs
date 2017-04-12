@@ -364,6 +364,7 @@ public class InitializeWorld : MonoBehaviour
 		 * Sensor:	  N N H H
 		 */
 		Filter filter = GetComponent<Filter>();
+<<<<<<< HEAD
 		
 				for (int i = 0; i < 100; i++)
 				{
@@ -391,13 +392,24 @@ public class InitializeWorld : MonoBehaviour
 		filter.ExecuteInstruction(d1, t1);
 		filter.ExecuteInstruction(d1, t1);
 		filter.ExecuteInstruction(d1, t1);
+=======
 
+        /*
+		for (int i = 0; i < 100; i++)
+		{
+			// Debug.Log(action.direction + ", " + action.sensedTile.ToString());
+			filter.ExecuteInstruction(map.action[i], map.sensor[i]);
+		}
+		GetComponent<Viterbi>().start(map.action);
+        */
 
-		/*
-        Direction d1 = Direction.Left;
+>>>>>>> origin/master
+
+		
+        Direction d1 = Direction.Right;
         Direction d2 = Direction.Right;
         Direction d3 = Direction.Down;
-        Direction d4 = Direction.Up;
+        Direction d4 = Direction.Down;
         TileTypes t1 = TileTypes.Normal;
         TileTypes t2 = TileTypes.Normal;
         TileTypes t3 = TileTypes.Highway;
@@ -406,12 +418,12 @@ public class InitializeWorld : MonoBehaviour
         filter.ExecuteInstruction(d2, t2);
         filter.ExecuteInstruction(d3, t3);
         filter.ExecuteInstruction(d4, t4);
-        */
 
 
 
 
-	}
+
+    }
 
 	void StartMovement()
 	{
