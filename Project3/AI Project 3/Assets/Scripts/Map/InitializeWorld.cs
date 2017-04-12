@@ -269,7 +269,7 @@ public class InitializeWorld : MonoBehaviour
 				Direction action = movementArray[Random.Range(0, 4)];
 				sense.Move(action);
 				action_string += action.ToString().Substring(0,1);
-				movement_string += map.agent_y + " " + map.agent_x + "\n";
+				movement_string += map.agent_x + " " + map.agent_y + "\n";
 				sense_string += map.TileToString(map.currentTile);
 			}
 			buffer.Add(start.y + " " + start.x);
@@ -364,16 +364,33 @@ public class InitializeWorld : MonoBehaviour
 		 * Sensor:	  N N H H
 		 */
 		Filter filter = GetComponent<Filter>();
-		TileTypes t = map.gridData[2, 10];
-		Debug.Log(t.ToString());
+		
+				for (int i = 0; i < 100; i++)
+				{
+					// Debug.Log(action.direction + ", " + action.sensedTile.ToString());
+					filter.ExecuteInstruction(map.action[i], map.sensor[i]);
+				}
+				
+		//GetComponent<Viterbi>().start(map.action);
+		/*
+		Direction d1 = Direction.Up;
+		Direction d2 = Direction.Up;
+		Direction d3 = Direction.Up;
+		Direction d4 = Direction.Up;
+		TileTypes t1 = TileTypes.Highway;
 
-		for (int i = 0; i < 100; i++)
-		{
-			// Debug.Log(action.direction + ", " + action.sensedTile.ToString());
-			filter.ExecuteInstruction(map.action[i], map.sensor[i]);
-		}
-		GetComponent<Viterbi>().start(map.action);
 
+
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
+		filter.ExecuteInstruction(d1, t1);
 
 
 		/*

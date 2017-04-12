@@ -41,8 +41,8 @@ public class Filter : MonoBehaviour
 
         if (Random.Range(1, 11) < 10)
         {
-            int moveY = 0; ;
-            int moveX = 0; ;
+            int moveY = 0; 
+            int moveX = 0; 
             switch (direction)
             {
                 case Direction.Up:
@@ -62,17 +62,30 @@ public class Filter : MonoBehaviour
                     moveX = 1;
                     break;
             }
-            bool allowMovement = !(moveOutOfBounds(map.agent_y, map.agent_x, moveY, moveX) || map.gridData[map.agent_y, map.agent_x] == TileTypes.Blocked);
+            bool allowMovement = !(checkEdge(map.agent_y, map.agent_x, moveY, moveX) || (map.gridData[map.agent_y + moveY, map.agent_x + moveX] == TileTypes.Blocked));
+			Debug.Log("allow move: " + allowMovement);
 			if (allowMovement)
 			{
-				Debug.Log("In move: " + allowMovement + " " + map.agent_y + " " + map.agent_x);
+				Debug.Log("In move: " + allowMovement + " " + map.agent_y + " " + map.agent_x + " going: " + direction);
 				map.agent_x += moveX; map.agent_y += moveY;
 			}
-				
+			Sense();	
 
         }// end movement
     }
-
+	bool checkEdge(int posY, int posX, int moveY, int moveX)
+	{
+		if (posY + moveY > map.y_rows || posY + moveY < 1 || posX + moveX > map.x_columns || posX + moveX < 1)
+		{
+			Debug.Log("Collison at : " + posY + " " + posX);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+	}
     private void Sense()
     {
         /*	90% chance we sense accuratly
@@ -81,7 +94,21 @@ public class Filter : MonoBehaviour
 
         if (Random.Range(1, 11) < 10)
         {
-            map.currentTile = map.gridData[map.agent_y, map.agent_x];
+			Debug.Log(map.currentTile + " " + map.agent_y + " " + map.agent_x);
+			try
+			{
+				map.currentTile = map.gridData[map.agent_y, map.agent_x];
+			}
+			catch
+			{
+
+			}
+           
+			if(map.currentTile == TileTypes.Blocked)
+			{
+				GameObject.Find("Tile_" + map.agent_y + "_" + map.agent_x).GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+				Debug.Log("colored!");
+			}
         }
         else
         {
@@ -138,7 +165,8 @@ public class Filter : MonoBehaviour
                         moveY = 0;
                         moveX = -1;
                         map.probabilities[i, j] = map.probabilities[i, j] * calculate_probabilities(i, j, moveX, moveY, read_value);
-                        break;
+						copyArray(probArray, map.probabilities);
+						break;
                     default:
                         Debug.Log("We put the wrong instruction in");
                         break;
@@ -284,7 +312,7 @@ public class Filter : MonoBehaviour
         {
             for (int j = 1; j < map.x_columns; j++)
             {
-                print += System.Math.Round(state[i, j], 6) + "\t";
+                print += System.Math.Round(state[i, j], 8) + "\t";
                 total_val += state[i, j];
             }
             print += "\n";
