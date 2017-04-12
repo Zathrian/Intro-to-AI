@@ -399,9 +399,12 @@ public class InitializeWorld : MonoBehaviour
 			// Debug.Log(action.direction + ", " + action.sensedTile.ToString());
 			filter.ExecuteInstruction(map.action[i], map.sensor[i]);
 		}
-		GetComponent<Viterbi>().start(map.action);
-        */
 
+    */
+		// GetComponent<Viterbi>().start(map.action);
+        GetComponent<Calculations>().start();
+        
+        
 
 
 
